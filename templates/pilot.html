@@ -17,9 +17,116 @@
         .axis-value {
             font-size: 2em;
         }
+        .vertical-slider {
+            width: 20px;
+            height: 200px;
+            -webkit-appearance: slider-vertical;
+            appearance: slider-vertical;
+            writing-mode: bt-lr;
+        }
+        .vertical-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--starwars-yellow);
+            cursor: pointer;
+        }
         .speed-control {
             width: 100%;
             max-width: 300px;
+        }
+        .instrument-panel {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .artificial-horizon {
+            width: 300px;
+            height: 200px;
+            background: #000;
+            border: 2px solid var(--starwars-blue);
+            position: relative;
+            overflow: hidden;
+        }
+        .radio-altimeter {
+            width: 200px;
+            height: 200px;
+            background: #000;
+            border: 2px solid var(--starwars-blue);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .altimeter-dial {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            border: 2px solid var(--starwars-yellow);
+            position: relative;
+            background: radial-gradient(circle at center, #000 0%, #1a1a1a 100%);
+        }
+        .altimeter-needle {
+            position: absolute;
+            width: 2px;
+            height: 90px;
+            background: var(--starwars-yellow);
+            transform-origin: bottom center;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .altimeter-value {
+            position: absolute;
+            font-size: 1.5em;
+            color: var(--starwars-yellow);
+            text-align: center;
+            width: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .altimeter-label {
+            position: absolute;
+            font-size: 0.8em;
+            color: var(--starwars-yellow);
+            text-align: center;
+            width: 100%;
+            bottom: 10px;
+        }
+        .horizon-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--starwars-yellow);
+            top: 50%;
+        }
+        .pitch-indicator {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 2px;
+            height: 100%;
+            background: var(--starwars-yellow);
+            transform-origin: center top;
+        }
+        .roll-indicator {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 2px;
+            height: 100%;
+            background: var(--starwars-yellow);
+            transform-origin: center center;
+        }
+        .degree-mark {
+            position: absolute;
+            width: 2px;
+            height: 10px;
+            background: var(--starwars-yellow);
+            left: 50%;
+            transform: translateX(-50%);
         }
         .confirm-button {
             background: var(--starwars-yellow);
@@ -70,11 +177,40 @@
         <h1 class="text-3xl mb-6">NAVIGATION STATION</h1>
         
         <div class="control-panel">
+            <div class="instrument-panel">
+                <!-- Radio Altimeter -->
+                <div class="radio-altimeter">
+                    <div class="altimeter-dial">
+                        <div class="altimeter-needle" id="altimeter-needle"></div>
+                        <div class="altimeter-value" id="altimeter-value">0</div>
+                        <div class="altimeter-label">ALTITUDE (m)</div>
+                    </div>
+                </div>
+                
+                <!-- Artificial Horizon -->
+                <div class="artificial-horizon">
+                    <div class="horizon-line"></div>
+                    <div class="pitch-indicator"></div>
+                    <div class="roll-indicator"></div>
+                    <!-- Degree marks -->
+                    <div class="degree-mark" style="top: 0%"></div>
+                    <div class="degree-mark" style="top: 11.1%"></div>
+                    <div class="degree-mark" style="top: 22.2%"></div>
+                    <div class="degree-mark" style="top: 33.3%"></div>
+                    <div class="degree-mark" style="top: 44.4%"></div>
+                    <div class="degree-mark" style="top: 55.6%"></div>
+                    <div class="degree-mark" style="top: 66.7%"></div>
+                    <div class="degree-mark" style="top: 77.8%"></div>
+                    <div class="degree-mark" style="top: 88.9%"></div>
+                    <div class="degree-mark" style="top: 100%"></div>
+                </div>
+            </div>
+            
             <div class="grid">
                 <div class="axis-control">
                     <h3 class="axis-label">Vertical Heading</h3>
                     <div class="axis-value" id="heading-y">0°</div>
-                    <input type="range" id="heading-y-control" min="-90" max="90" step="1" class="w-full">
+                    <input type="range" id="heading-y-control" min="-90" max="90" step="1" class="vertical-slider">
                 </div>
                 
                 <div class="axis-control">
@@ -157,6 +293,32 @@
             document.getElementById('heading-y-control').value = state.heading.y;
             document.getElementById('heading-x-control').value = state.heading.x;
             document.getElementById('speed-control').value = state.speed;
+            
+            // Update artificial horizon
+            const pitchIndicator = document.querySelector('.pitch-indicator');
+            const rollIndicator = document.querySelector('.roll-indicator');
+            
+            // Convert heading values to degrees for display
+            const pitch = state.heading.y;
+            const roll = state.heading.x;
+            
+            // Update indicators
+            pitchIndicator.style.transform = `rotate(${pitch}deg)`;
+            rollIndicator.style.transform = `rotate(${roll}deg)`;
+            
+            // Update altimeter
+            const altitude = state.altitude || 0;
+            document.getElementById('altimeter-value').textContent = Math.round(altitude);
+            const needle = document.getElementById('altimeter-needle');
+            const angle = (altitude / 1000) * 270; // Scale altitude to 0-270 degrees
+            needle.style.transform = `rotate(${angle}deg) translateX(-50%)`;
+            
+            // Update vertical heading slider
+            const slider = document.getElementById('heading-y-control');
+            const value = state.heading.y;
+            const range = slider.max - slider.min;
+            const position = (value - slider.min) / range * 100;
+            slider.style.background = `linear-gradient(to right, var(--starwars-blue) ${position}%, var(--starwars-black) ${position}%)`;
         });
 
         // Store current values
@@ -167,9 +329,16 @@
         };
 
         // Update heading when sliders change
-        document.getElementById('heading-y-control').addEventListener('input', function(e) {
-            currentValues.headingY = parseInt(e.target.value);
-            document.getElementById('heading-y').textContent = currentValues.headingY + '°';
+        document.getElementById('heading-y-control').addEventListener('input', (e) => {
+            const value = e.target.value;
+            document.getElementById('heading-y').textContent = value + '°';
+            currentValues.headingY = parseInt(value);
+            
+            // Update slider position visually
+            const slider = e.target;
+            const range = slider.max - slider.min;
+            const position = (value - slider.min) / range * 100;
+            slider.style.background = `linear-gradient(to right, var(--starwars-blue) ${position}%, var(--starwars-black) ${position}%)`;
         });
         
         document.getElementById('heading-x-control').addEventListener('input', function(e) {

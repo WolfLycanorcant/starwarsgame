@@ -10,10 +10,38 @@
         <h1 class="text-3xl mb-6">COMMUNICATIONS STATION</h1>
         
         <div class="control-panel">
+            <style>
+            .control-panel {
+                margin-bottom: 20px;
+            }
+            .gm-label {
+                display: block;
+                margin-bottom: 5px;
+            }
+            .frequency-slider {
+                width: 20px;
+                height: 200px;
+                -webkit-appearance: slider-vertical;
+                transform: rotate(180deg);
+            }
+            .frequency-slider::-webkit-slider-thumb {
+                -webkit-appearance: none;
+                width: 20px;
+                height: 20px;
+                background: var(--starwars-yellow);
+                cursor: pointer;
+            }
+            .gm-value {
+                font-size: 1.5em;
+                margin: 5px 0;
+                text-align: center;
+            }
+            </style>
             <div class="grid">
                 <div>
                     <h3>Current Frequency:</h3>
-                    <div id="frequency" class="text-4xl">121.5</div>
+                    <div id="frequency" class="text-4xl gm-value">121.5</div>
+                    <input type="range" id="freq-slider" min="118" max="123" step="0.1" class="frequency-slider">
                 </div>
             </div>
             
@@ -35,13 +63,17 @@
         
         socket.on('state_update', (state) => {
             document.getElementById('frequency').textContent = state.frequency || '121.5';
+            document.getElementById('freq-slider').value = state.frequency || '121.5';
         });
         
         function changeFrequency() {
+            const freq = document.getElementById('new-freq').value;
+            document.getElementById('frequency').textContent = freq;
+            document.getElementById('freq-slider').value = freq;
             socket.emit('player_action', {
                 room,
                 action: 'set_frequency',
-                value: document.getElementById('new-freq').value
+                value: freq
             });
         }
     </script>

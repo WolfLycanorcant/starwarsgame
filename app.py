@@ -32,6 +32,7 @@ def handle_join(data):
             'state': {
                 'heading': {'x': 0, 'y': 0},  # Horizontal and vertical headings
                 'speed': 0,
+                'altitude': 0,  # Initial altitude in meters
                 'alert': 'NORMAL',
                 'systems': {
                     'weapons': 100,

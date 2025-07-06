@@ -13,8 +13,18 @@
             margin-bottom: 5px;
         }
         .gm-slider {
-            width: 100%;
-            max-width: 300px;
+            width: 20px;
+            height: 200px;
+            writing-mode: bt-lr;
+            -webkit-appearance: slider-vertical;
+            transform: rotate(180deg);
+        }
+        .gm-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--starwars-yellow);
+            cursor: pointer;
         }
         .gm-value {
             font-size: 1.5em;
@@ -73,6 +83,28 @@
                     <div>
                         <label class="gm-label">Hull Message</label>
                         <textarea id="hull-message" rows="2" class="bg-black border p-2 w-full"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Controls -->
+            <div class="gm-control">
+                <h2>Navigation</h2>
+                <div class="grid">
+                    <div>
+                        <label class="gm-label">Altitude Simulation</label>
+                        <div class="flex flex-col gap-2">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm">0m</span>
+                                <input type="range" id="altitude-sim" min="0" max="10000" step="100" class="w-full bg-black border p-2">
+                                <span class="text-sm">10,000m</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs text-gray-400">Surface</span>
+                                <span class="text-xs text-gray-400">Atmosphere</span>
+                                <span class="text-xs text-gray-400">Space</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -152,7 +184,8 @@
                     power: parseInt(document.getElementById('power-status').value),
                     hull_message: document.getElementById('hull-message').value
                 },
-                frequency: parseFloat(document.getElementById('new-frequency').value) || 121.5
+                frequency: parseFloat(document.getElementById('new-frequency').value) || 121.5,
+                altitude: parseInt(document.getElementById('altitude-sim').value)
             };
             
             socket.emit('gm_update', {
