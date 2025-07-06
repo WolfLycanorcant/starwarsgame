@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Star Destroyer Bridge</title>
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-4xl text-center mb-8">Imperial Star Destroyer Bridge</h1>
+        
+        <div class="grid">
+            <!-- Navigation -->
+            <div class="station-card p-6 text-center" onclick="joinStation('pilot')">
+                <h2 class="text-2xl">NAVIGATION</h2>
+                <p>Control ship heading and speed</p>
+            </div>
+            
+            <!-- Weapons -->
+            <div class="station-card p-6 text-center" onclick="joinStation('gunner')">
+                <h2 class="text-2xl">WEAPONS</h2>
+                <p>Operate turbolasers and missiles</p>
+            </div>
+            
+            <!-- Engineering -->
+            <div class="station-card p-6 text-center" onclick="joinStation('engineer')">
+                <h2 class="text-2xl">ENGINEERING</h2>
+                <p>Manage power and systems</p>
+            </div>
+            
+            <!-- Command -->
+            <div class="station-card p-6 text-center" onclick="joinStation('commander')">
+                <h2 class="text-2xl">COMMAND</h2>
+                <p>Strategic decisions</p>
+            </div>
+            
+            <!-- Communications -->
+            <div class="station-card p-6 text-center" onclick="joinStation('comms')">
+                <h2 class="text-2xl">COMMUNICATIONS</h2>
+                <p>Handle subspace messages</p>
+            </div>
+            
+            <!-- Game Master -->
+            <div class="station-card p-6 text-center" onclick="joinStation('gm')">
+                <h2 class="text-2xl">GAME MASTER</h2>
+                <p>Control the simulation</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+        
+        function joinStation(station) {
+            const room = prompt("Enter room ID:");
+            if (room) {
+                window.location.href = `/station/${station}?room=${room}`;
+            }
+        }
+    </script>
+</body>
+</html>

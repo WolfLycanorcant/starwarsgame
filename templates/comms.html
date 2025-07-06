@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Communications Station</title>
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-3xl mb-6">COMMUNICATIONS STATION</h1>
+        
+        <div class="control-panel">
+            <div class="grid">
+                <div>
+                    <h3>Current Frequency:</h3>
+                    <div id="frequency" class="text-4xl">121.5</div>
+                </div>
+            </div>
+            
+            <div class="mt-8">
+                <input type="number" id="new-freq" class="bg-black border p-2 w-full" placeholder="New frequency">
+                <button onclick="changeFrequency()" class="bg-yellow-600 px-6 py-3 mt-4">
+                    Update Frequency
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const room = params.get('room');
+        const socket = io();
+        
+        socket.emit('join', { room, station: 'comms' });
+        
+        socket.on('state_update', (state) => {
+            document.getElementById('frequency').textContent = state.frequency || '121.5';
+        });
+        
+        function changeFrequency() {
+            socket.emit('player_action', {
+                room,
+                action: 'set_frequency',
+                value: document.getElementById('new-freq').value
+            });
+        }
+    </script>
+</body>
+</html>

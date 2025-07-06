@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Engineer Station</title>
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-3xl mb-6">ENGINEERING STATION</h1>
+        
+        <div class="control-panel">
+            <div class="grid">
+                <div>
+                    <h3>Hull Integrity:</h3>
+                    <div id="hull" class="text-4xl">100%</div>
+                </div>
+                <div>
+                    <h3>Power Level:</h3>
+                    <div id="power" class="text-4xl">100%</div>
+                </div>
+            </div>
+            
+            <div class="mt-8">
+                <label>Power Allocation:</label>
+                <input type="range" id="power-slider" min="0" max="100" class="w-full mt-2">
+                <button onclick="adjustPower()" class="bg-green-600 px-6 py-3 mt-4">
+                    Adjust Power
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const room = params.get('room');
+        const socket = io();
+        
+        socket.emit('join', { room, station: 'engineer' });
+        
+        socket.on('state_update', (state) => {
+            document.getElementById('hull').textContent = state.systems.hull + '%';
+            document.getElementById('power').textContent = state.systems.power + '%';
+        });
+        
+        function adjustPower() {
+            socket.emit('player_action', {
+                room,
+                action: 'adjust_power',
+                value: document.getElementById('power-slider').value
+            });
+        }
+    </script>
+</body>
+</html>

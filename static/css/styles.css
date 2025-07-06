@@ -1,0 +1,73 @@
+:root {
+    --starwars-yellow: #FFD700;
+    --starwars-blue: #1E90FF;
+    --starwars-red: #FF4500;
+}
+
+body {
+    background: #000;
+    color: var(--starwars-yellow);
+    font-family: 'Courier New', monospace;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.station-card {
+    border: 2px solid var(--starwars-blue);
+    padding: 20px;
+    margin: 10px;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.station-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px var(--starwars-blue);
+}
+
+.gm-panel {
+    border: 2px solid var(--starwars-red);
+    padding: 20px;
+    margin: 20px;
+    box-shadow: 0 0 15px var(--starwars-red);
+}
+
+.control-panel {
+    background: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border: 2px solid var(--starwars-blue);
+    margin: 20px;
+}
+
+input, select, button {
+    background: #000;
+    color: var(--starwars-yellow);
+    border: 2px solid var(--starwars-blue);
+    margin: 5px;
+    padding: 8px;
+}
+
+button {
+    cursor: pointer;
+    background: var(--starwars-blue);
+}
+
+button:hover {
+    background: var(--starwars-yellow);
+    color: #000;
+}
+
+#heading, #speed {
+    font-size: 2em;
+    margin: 10px 0;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}

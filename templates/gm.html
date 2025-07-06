@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Game Master</title>
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        .gm-control {
+            margin-bottom: 20px;
+        }
+        .gm-label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .gm-slider {
+            width: 100%;
+            max-width: 300px;
+        }
+        .gm-value {
+            font-size: 1.5em;
+            margin: 5px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-3xl mb-6">GAME MASTER CONTROL</h1>
+        
+        <div class="gm-panel">
+            <!-- Navigation Controls -->
+            <div class="gm-control">
+                <h2>Navigation</h2>
+                <div class="grid">
+                    <div>
+                        <label class="gm-label">Horizontal Heading</label>
+                        <div class="gm-value" id="current-x">0°</div>
+                        <input type="range" id="heading-x" min="-180" max="180" step="1" class="gm-slider">
+                    </div>
+                    <div>
+                        <label class="gm-label">Vertical Heading</label>
+                        <div class="gm-value" id="current-y">0°</div>
+                        <input type="range" id="heading-y" min="-90" max="90" step="1" class="gm-slider">
+                    </div>
+                    <div>
+                        <label class="gm-label">Speed</label>
+                        <div class="gm-value" id="current-speed">0</div>
+                        <input type="range" id="speed" min="0" max="100" step="1" class="gm-slider">
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Controls -->
+            <div class="gm-control">
+                <h2>Systems</h2>
+                <div class="grid">
+                    <div>
+                        <label class="gm-label">Alert Status</label>
+                        <select id="alert-status" class="bg-black border p-2">
+                            <option>NORMAL</option>
+                            <option>YELLOW</option>
+                            <option>RED</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="gm-label">Weapon Status (%)</label>
+                        <input type="number" id="weapon-status" min="0" max="100" class="bg-black border p-2">
+                    </div>
+                    <div>
+                        <label class="gm-label">Power Allocation (%)</label>
+                        <input type="number" id="power-status" min="0" max="100" class="bg-black border p-2">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Update Button -->
+            <button onclick="updateGameState()" class="bg-red-600 px-6 py-3 mt-4">
+                UPDATE ALL STATIONS
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const room = params.get('room');
+        const socket = io();
+        
+        socket.emit('join', { room, station: 'gm' });
+        
+        // Update state when sliders change
+        document.getElementById('heading-x').addEventListener('input', function(e) {
+            document.getElementById('current-x').textContent = e.target.value + '°';
+        });
+        
+        document.getElementById('heading-y').addEventListener('input', function(e) {
+            document.getElementById('current-y').textContent = e.target.value + '°';
+        });
+        
+        document.getElementById('speed').addEventListener('input', function(e) {
+            document.getElementById('current-speed').textContent = e.target.value;
+        });
+        
+        // Listen for state updates and update GM's sliders
+        socket.on('state_update', (state) => {
+            // Update heading sliders
+            document.getElementById('heading-x').value = state.heading.x;
+            document.getElementById('current-x').textContent = state.heading.x + '°';
+            
+            document.getElementById('heading-y').value = state.heading.y;
+            document.getElementById('current-y').textContent = state.heading.y + '°';
+            
+            document.getElementById('speed').value = state.speed;
+            document.getElementById('current-speed').textContent = state.speed;
+            
+            // Update other controls
+            document.getElementById('alert-status').value = state.alert;
+            document.getElementById('weapon-status').value = state.systems.weapons;
+            document.getElementById('power-status').value = state.systems.power;
+        });
+        
+        function updateGameState() {
+            const changes = {
+                heading: {
+                    x: parseInt(document.getElementById('heading-x').value),
+                    y: parseInt(document.getElementById('heading-y').value)
+                },
+                speed: parseInt(document.getElementById('speed').value),
+                alert: document.getElementById('alert-status').value,
+                systems: {
+                    weapons: parseInt(document.getElementById('weapon-status').value),
+                    power: parseInt(document.getElementById('power-status').value)
+                }
+            };
+            
+            socket.emit('gm_update', {
+                room,
+                changes: changes
+            });
+        }
+    </script>
+</body>
+</html>
