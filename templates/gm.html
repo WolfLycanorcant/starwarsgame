@@ -70,6 +70,10 @@
                         <label class="gm-label">Power Allocation (%)</label>
                         <input type="number" id="power-status" min="0" max="100" class="bg-black border p-2">
                     </div>
+                    <div>
+                        <label class="gm-label">Hull Message</label>
+                        <textarea id="hull-message" rows="2" class="bg-black border p-2 w-full"></textarea>
+                    </div>
                 </div>
             </div>
 
@@ -128,7 +132,8 @@
                 alert: document.getElementById('alert-status').value,
                 systems: {
                     weapons: parseInt(document.getElementById('weapon-status').value),
-                    power: parseInt(document.getElementById('power-status').value)
+                    power: parseInt(document.getElementById('power-status').value),
+                    hull_message: document.getElementById('hull-message').value
                 }
             };
             

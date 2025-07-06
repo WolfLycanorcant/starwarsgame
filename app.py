@@ -37,7 +37,8 @@ def handle_join(data):
                     'weapons': 100,
                     'shields': 100,
                     'hull': 100,
-                    'power': 100
+                    'power': 100,
+                    'hull_message': 'All systems nominal'
                 }
             },
             'players': {}

@@ -34,6 +34,35 @@
             background: var(--starwars-blue);
             color: #fff;
         }
+        .macro-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .macro-button {
+            background: var(--starwars-yellow);
+            color: #000;
+            border: 2px solid var(--starwars-blue);
+            padding: 10px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .macro-button:hover {
+            background: var(--starwars-blue);
+            color: #fff;
+            transform: scale(1.05);
+        }
+        .macro-button:active {
+            transform: scale(0.95);
+        }
+        .macro-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
@@ -65,6 +94,48 @@
             <button class="confirm-button" onclick="confirmHeadings()">
                 CONFIRM HEADINGS
             </button>
+
+            <!-- Add macro buttons -->
+            <div class="macro-buttons">
+                <!-- Speed Controls -->
+                <div class="macro-row">
+                    <button class="macro-button" onclick="setSpeed(-10)">
+                        [◀ Slow Down]
+                    </button>
+                    <button class="macro-button" onclick="setSpeed(50)">
+                        [🔄 Fly]
+                    </button>
+                    <button class="macro-button" onclick="setSpeed(10)">
+                        [▶ Speed Up]
+                    </button>
+                </div>
+
+                <!-- Heading Controls -->
+                <div class="macro-row">
+                    <button class="macro-button" onclick="bankLeft()">
+                        [⬅ Bank Left]
+                    </button>
+                    <button class="macro-button" onclick="navigateTerrain()">
+                        [🧭 Navigate Terrain]
+                    </button>
+                    <button class="macro-button" onclick="bankRight()">
+                        [➡ Bank Right]
+                    </button>
+                </div>
+
+                <!-- Vertical Controls -->
+                <div class="macro-row">
+                    <button class="macro-button" onclick="descend()">
+                        [⬇ Descend]
+                    </button>
+                    <button class="macro-button" onclick="punchIt()">
+                        [🚀 Punch It!]
+                    </button>
+                    <button class="macro-button" onclick="ascend()">
+                        [⬆ Ascend]
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -133,6 +204,63 @@
                 action: 'update_speed',
                 value: currentValues.speed
             });
+        }
+
+        // Macro functions
+        function setSpeed(increment) {
+            currentValues.speed = Math.max(0, Math.min(100, currentValues.speed + increment));
+            document.getElementById('speed').textContent = currentValues.speed;
+            document.getElementById('speed-control').value = currentValues.speed;
+        }
+
+        function bankLeft() {
+            currentValues.headingX = Math.max(-180, Math.min(180, currentValues.headingX - 10));
+            document.getElementById('heading-x').textContent = currentValues.headingX + '°';
+            document.getElementById('heading-x-control').value = currentValues.headingX;
+        }
+
+        function bankRight() {
+            currentValues.headingX = Math.max(-180, Math.min(180, currentValues.headingX + 10));
+            document.getElementById('heading-x').textContent = currentValues.headingX + '°';
+            document.getElementById('heading-x-control').value = currentValues.headingX;
+        }
+
+        function navigateTerrain() {
+            // Random terrain navigation
+            currentValues.headingX = Math.floor(Math.random() * 360) - 180;
+            currentValues.headingY = Math.floor(Math.random() * 180) - 90;
+            
+            document.getElementById('heading-x').textContent = currentValues.headingX + '°';
+            document.getElementById('heading-y').textContent = currentValues.headingY + '°';
+            document.getElementById('heading-x-control').value = currentValues.headingX;
+            document.getElementById('heading-y-control').value = currentValues.headingY;
+        }
+
+        function descend() {
+            currentValues.headingY = Math.max(-90, Math.min(90, currentValues.headingY - 10));
+            document.getElementById('heading-y').textContent = currentValues.headingY + '°';
+            document.getElementById('heading-y-control').value = currentValues.headingY;
+        }
+
+        function ascend() {
+            currentValues.headingY = Math.max(-90, Math.min(90, currentValues.headingY + 10));
+            document.getElementById('heading-y').textContent = currentValues.headingY + '°';
+            document.getElementById('heading-y-control').value = currentValues.headingY;
+        }
+
+        function punchIt() {
+            // Maximum speed and straight ahead
+            currentValues.speed = 100;
+            currentValues.headingX = 0;
+            currentValues.headingY = 0;
+            
+            document.getElementById('speed').textContent = currentValues.speed;
+            document.getElementById('heading-x').textContent = currentValues.headingX + '°';
+            document.getElementById('heading-y').textContent = currentValues.headingY + '°';
+            
+            document.getElementById('speed-control').value = currentValues.speed;
+            document.getElementById('heading-x-control').value = currentValues.headingX;
+            document.getElementById('heading-y-control').value = currentValues.headingY;
         }
     </script>
 </body>
