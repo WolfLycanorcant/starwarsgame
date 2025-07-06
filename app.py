@@ -6,7 +6,6 @@ app = Flask(__name__)
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
-# Game state storage
 rooms = {}
 
 @app.route('/')
@@ -26,13 +25,12 @@ def handle_join(data):
     room = data['room']
     station = data['station']
     
-    # Create room if new
     if room not in rooms:
         rooms[room] = {
             'state': {
-                'heading': {'x': 0, 'y': 0},  # Horizontal and vertical headings
+                'heading': {'x': 0, 'y': 0},
                 'speed': 0,
-                'altitude': 0,  # Initial altitude in meters
+                'altitude': 0,
                 'alert': 'NORMAL',
                 'systems': {
                     'weapons': 100,
@@ -45,17 +43,14 @@ def handle_join(data):
             'players': {}
         }
     
-    # Join room and station namespace
     join_room(room)
     join_room(f"{room}_{station}")
     
-    # Update player list
     rooms[room]['players'][request.sid] = {
         'station': station,
         'name': data.get('name', 'Player')
     }
     
-    # Send initial state to new player
     emit('state_update', rooms[room]['state'], room=room)
     print(f"Player joined {room} as {station}")
 
@@ -63,10 +58,7 @@ def handle_join(data):
 def handle_gm_update(data):
     room = data['room']
     if room in rooms:
-        # Update game state
         rooms[room]['state'].update(data['changes'])
-        
-        # Broadcast to all players
         emit('state_update', rooms[room]['state'], room=room)
         print(f"GM updated room {room}: {data['changes']}")
 
@@ -78,7 +70,6 @@ def handle_player_action(data):
         value = data.get('value')
         state = rooms[room]['state']
         
-        # Handle different station actions
         if action == 'update_heading_x':
             state['heading']['x'] = value
         elif action == 'update_heading_y':
@@ -93,11 +84,11 @@ def handle_player_action(data):
             state['alert'] = value
         elif action == 'set_frequency':
             state['frequency'] = value
+        elif action == 'set_mission_status':
+            state['mission_status'] = value
             
-        # Broadcast updated state
         emit('state_update', state, room=room)
         
-        # Notify GM specifically when headings are confirmed
         if action in ['update_heading_x', 'update_heading_y']:
             emit('gm_notification', {
                 'type': 'heading_update',
@@ -110,7 +101,6 @@ def handle_player_action(data):
 @socketio.on('disconnect')
 def handle_disconnect():
     print('Client disconnected:', request.sid)
-    # Remove player from rooms
     for room in rooms.values():
         if request.sid in room['players']:
             del room['players'][request.sid]

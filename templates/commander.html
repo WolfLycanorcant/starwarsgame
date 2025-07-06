@@ -10,42 +10,97 @@
         <h1 class="text-3xl mb-6">COMMAND STATION</h1>
         
         <div class="control-panel">
-            <div class="grid">
-                <div>
-                    <h3>Mission Status:</h3>
-                    <div id="mission-status" class="text-4xl">Active</div>
+            <div class="axis-control">
+                <div class="axis-label">MISSION STATUS</div>
+                <div id="mission-status" class="text-4xl">Active</div>
+                <div class="macro-buttons">
+                    <button class="macro-button" onclick="Commander.setMissionStatus('Active')">
+                        [🟢 ACTIVE]
+                    </button>
+                    <button class="macro-button" onclick="Commander.setMissionStatus('Critical')">
+                        [🔴 CRITICAL]
+                    </button>
+                    <button class="macro-button" onclick="Commander.setMissionStatus('Complete')">
+                        [🟢 COMPLETE]
+                    </button>
                 </div>
             </div>
-            
-            <div class="mt-8 grid grid-cols-2 gap-4">
-                <button onclick="setAlert('RED')" class="bg-red-600 px-4 py-2">
-                    Red Alert
-                </button>
-                <button onclick="setAlert('NORMAL')" class="bg-green-600 px-4 py-2">
-                    All Clear
-                </button>
+
+            <div class="axis-control">
+                <div class="axis-label">ALERT STATUS</div>
+                <div id="alert-status" class="text-4xl">NORMAL</div>
+                <div class="macro-buttons">
+                    <button class="alert-button red" onclick="Commander.setAlert('RED')">
+                        [🔴 RED ALERT]
+                    </button>
+                    <button class="alert-button green" onclick="Commander.setAlert('NORMAL')">
+                        [🟢 NORMAL]
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        const params = new URLSearchParams(window.location.search);
-        const room = params.get('room');
-        const socket = io();
-        
-        socket.emit('join', { room, station: 'commander' });
-        
-        socket.on('state_update', (state) => {
-            document.getElementById('mission-status').textContent = state.alert;
-        });
-        
-        function setAlert(level) {
-            socket.emit('player_action', {
-                room,
-                action: 'set_alert',
-                value: level
-            });
-        }
+        // Commander Station Controller
+        const Commander = {
+            // State references
+            elements: {
+                missionStatus: document.getElementById('mission-status'),
+                alertStatus: document.getElementById('alert-status')
+            },
+
+            // Socket connection
+            socket: io(),
+            room: new URLSearchParams(window.location.search).get('room'),
+
+            // Initialize
+            init() {
+                if (!this.room) {
+                    console.error('No room parameter provided');
+                    alert('Please provide a room parameter in the URL');
+                    return;
+                }
+                
+                console.log('Joining room:', this.room);
+                this.socket.emit('join', { 
+                    room: this.room, 
+                    station: 'commander' 
+                });
+                
+                this.socket.on('connect', () => {
+                    console.log('Connected to server');
+                });
+                
+                this.socket.on('state_update', (state) => {
+                    console.log('Received state update:', state);
+                    this.elements.missionStatus.textContent = state.mission_status || 'Active';
+                    this.elements.alertStatus.textContent = state.alert || 'NORMAL';
+                });
+            },
+
+            // Action handlers
+            setMissionStatus(status) {
+                this.elements.missionStatus.textContent = status;
+                this.socket.emit('player_action', {
+                    room: this.room,
+                    action: 'set_mission_status',
+                    value: status
+                });
+            },
+
+            setAlert(level) {
+                this.elements.alertStatus.textContent = level;
+                this.socket.emit('player_action', {
+                    room: this.room,
+                    action: 'set_alert',
+                    value: level
+                });
+            }
+        };
+
+        // Start the controller
+        Commander.init();
     </script>
 </body>
 </html>
