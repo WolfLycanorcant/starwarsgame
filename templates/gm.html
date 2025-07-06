@@ -67,12 +67,24 @@
                         <input type="number" id="weapon-status" min="0" max="100" class="bg-black border p-2">
                     </div>
                     <div>
-                        <label class="gm-label">Power Allocation (%)</label>
+                        <label class="gm-label">Power Status (%)</label>
                         <input type="number" id="power-status" min="0" max="100" class="bg-black border p-2">
                     </div>
                     <div>
                         <label class="gm-label">Hull Message</label>
                         <textarea id="hull-message" rows="2" class="bg-black border p-2 w-full"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Communications Controls -->
+            <div class="gm-control">
+                <h2>Communications</h2>
+                <div class="grid">
+                    <div>
+                        <label class="gm-label">Current Frequency</label>
+                        <div id="current-frequency" class="gm-value">121.5</div>
+                        <input type="number" id="new-frequency" step="0.1" class="bg-black border p-2 w-full" placeholder="Enter frequency">
                     </div>
                 </div>
             </div>
@@ -120,6 +132,11 @@
             document.getElementById('alert-status').value = state.alert;
             document.getElementById('weapon-status').value = state.systems.weapons;
             document.getElementById('power-status').value = state.systems.power;
+            
+            // Update frequency
+            if (state.frequency) {
+                document.getElementById('current-frequency').textContent = state.frequency;
+            }
         });
         
         function updateGameState() {
@@ -134,7 +151,8 @@
                     weapons: parseInt(document.getElementById('weapon-status').value),
                     power: parseInt(document.getElementById('power-status').value),
                     hull_message: document.getElementById('hull-message').value
-                }
+                },
+                frequency: parseFloat(document.getElementById('new-frequency').value) || 121.5
             };
             
             socket.emit('gm_update', {
