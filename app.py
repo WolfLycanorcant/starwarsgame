@@ -64,39 +64,42 @@ def handle_gm_update(data):
 
 @socketio.on('player_action')
 def handle_player_action(data):
-    room = data['room']
-    if room in rooms:
-        action = data['action']
-        value = data.get('value')
-        state = rooms[room]['state']
+    room = data.get('room')
+    action = data.get('action')
+    value = data.get('value')
+    
+    if room not in rooms:
+        return
         
-        if action == 'update_heading_x':
-            state['heading']['x'] = value
-        elif action == 'update_heading_y':
-            state['heading']['y'] = value
-        elif action == 'update_speed':
-            state['speed'] = value
-        elif action == 'fire_weapons':
-            state['systems']['weapons'] = max(0, state['systems']['weapons'] - 10)
-        elif action == 'adjust_power':
-            state['systems']['power'] = value
-        elif action == 'set_alert':
-            state['alert'] = value
-        elif action == 'set_frequency':
-            state['frequency'] = value
-        elif action == 'set_mission_status':
-            state['mission_status'] = value
-            
-        emit('state_update', state, room=room)
-        
-        if action in ['update_heading_x', 'update_heading_y']:
-            emit('gm_notification', {
-                'type': 'heading_update',
-                'heading': state['heading']
-            }, room=room)
-            print(f"Heading update notification sent to GM: x={state['heading']['x']}°, y={state['heading']['y']}°")
-        
-        print(f"Player action in {room}: {action} = {value}")
+    state = rooms[room]['state']
+    
+    if action == 'set_mission_status':
+        state['mission_status'] = value
+    elif action == 'set_alert':
+        state['alert'] = value
+    elif action == 'set_weapons':
+        state['systems']['weapons'] = value
+    elif action == 'set_power':
+        state['systems']['power'] = value
+    elif action == 'update_heading_x':
+        state['heading']['x'] = value
+    elif action == 'update_heading_y':
+        state['heading']['y'] = value
+    elif action == 'update_speed':
+        state['speed'] = value
+    elif action == 'update_altitude':
+        state['altitude'] = value  # Altitude is now in kilometers
+    
+    emit('state_update', state, room=room)
+    
+    if action in ['update_heading_x', 'update_heading_y']:
+        emit('gm_notification', {
+            'type': 'heading_update',
+            'heading': state['heading']
+        }, room=room)
+        print(f"Heading update notification sent to GM: x={state['heading']['x']}°, y={state['heading']['y']}°")
+    
+    print(f"Player action in {room}: {action} = {value}")
 
 @socketio.on('disconnect')
 def handle_disconnect():

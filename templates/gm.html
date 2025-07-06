@@ -243,7 +243,7 @@
                 <div class="altimeter-dial">
                     <div class="altimeter-needle" id="altimeter-needle"></div>
                     <div class="altimeter-value" id="altimeter-value">0</div>
-                    <div class="altimeter-label">ALTITUDE (m)</div>
+                    <div class="altimeter-label">ALTITUDE (k)</div>
                 </div>
             </div>
             
@@ -273,6 +273,11 @@
                 <div class="axis-label">POWER</div>
                 <div class="axis-value" id="power-value">100%</div>
                 <input type="number" id="power-status" min="0" max="100" class="bg-black border p-2">
+            </div>
+            <div class="axis-control">
+                <div class="axis-label">ALTITUDE</div>
+                <div class="axis-value" id="altitude-value">0k</div>
+                <input type="number" id="altitude-status" min="0" max="100" step="0.1" class="bg-black border p-2">
             </div>
         </div>
         <div class="axis-control" style="width: 100%;">
@@ -310,6 +315,7 @@
                 alertStatus: document.getElementById('alert-status'),
                 weaponsStatus: document.getElementById('weapons-status'),
                 powerStatus: document.getElementById('power-status'),
+                altitudeStatus: document.getElementById('altitude-status'),
                 hullMessage: document.getElementById('hull-message'),
                 newFrequency: document.getElementById('new-frequency'),
                 // Instrument elements
@@ -387,6 +393,15 @@
                     });
                 });
 
+                document.getElementById('altitude-status').addEventListener('input', (e) => {
+                    const value = parseInt(e.target.value);
+                    this.elements.altitudeStatus.value = value;
+                    this.socket.emit('gm_update', {
+                        room: this.room,
+                        changes: { altitude: value }
+                    });
+                });
+
                 document.getElementById('weapons-status').addEventListener('input', (e) => {
                     const value = parseInt(e.target.value);
                     this.elements.weaponsStatus.value = value;
@@ -424,6 +439,7 @@
                 this.elements.headingY.textContent = state.heading.y + '°';
                 this.elements.speed.textContent = state.speed;
                 this.elements.alertStatus.value = state.alert;
+                this.elements.altitudeStatus.value = state.altitude;
                 this.elements.weaponsStatus.value = state.systems.weapons;
                 this.elements.powerStatus.value = state.systems.power;
                 this.elements.hullMessage.value = state.systems.hull_message;
@@ -439,12 +455,17 @@
                 }
                 
                 if (this.elements.altimeterNeedle) {
-                    const maxAltitude = 10000;
+                    const maxAltitude = 100;  // Maximum altitude in kilometers
                     const angle = (state.altitude / maxAltitude) * 180;
                     this.elements.altimeterNeedle.style.transform = `rotate(${angle}deg)`;
                     if (this.elements.altimeterValue) {
                         this.elements.altimeterValue.textContent = state.altitude;
                     }
+                }
+                
+                // Update altitude value display
+                if (this.elements.altitudeStatus) {
+                    this.elements.altitudeStatus.value = state.altitude;
                 }
             },
 
