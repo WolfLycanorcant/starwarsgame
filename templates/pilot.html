@@ -42,6 +42,12 @@
             justify-content: center;
             margin: 20px 0;
         }
+        :root {
+            --starwars-blue: #007bff;
+            --starwars-green: #22b14c;
+            --starwars-yellow: #ffd700;
+        }
+        
         .artificial-horizon {
             width: 300px;
             height: 200px;
@@ -49,6 +55,13 @@
             border: 2px solid var(--starwars-blue);
             position: relative;
             overflow: hidden;
+            transform: scaleX(-1);
+        }
+        .artificial-horizon .horizon-line,
+        .artificial-horizon .pitch-indicator,
+        .artificial-horizon .roll-indicator,
+        .artificial-horizon .degree-mark {
+            transform: scaleX(-1);
         }
         .radio-altimeter {
             width: 200px;
@@ -105,19 +118,19 @@
         .pitch-indicator {
             position: absolute;
             left: 50%;
-            top: 50%;
+            top: 0%;
             width: 2px;
             height: 100%;
-            background: var(--starwars-yellow);
-            transform-origin: center top;
+            background: var(--starwars-blue);
+            transform-origin: center center;
         }
         .roll-indicator {
             position: absolute;
-            left: 50%;
+            left: 0%;
             top: 50%;
-            width: 2px;
-            height: 100%;
-            background: var(--starwars-yellow);
+            width: 100%;
+            height: 2px;
+            background: var(--starwars-green);
             transform-origin: center center;
         }
         .degree-mark {
@@ -303,8 +316,9 @@
             const roll = state.heading.x;
             
             // Update indicators
-            pitchIndicator.style.transform = `rotate(${pitch}deg)`;
-            rollIndicator.style.transform = `rotate(${roll}deg)`;
+            // For pitch: we need to invert the rotation because of the slider direction
+            pitchIndicator.style.transform = `rotate(${-pitch}deg) translateX(-50%) translateY(-10%) scaleX(-1)`;
+            rollIndicator.style.transform = `rotate(${roll}deg) translateY(-50%) scaleX(-1)`;
             
             // Update altimeter
             const altitude = state.altitude || 0;
