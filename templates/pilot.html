@@ -239,11 +239,6 @@
                 </div>
             </div>
             
-            <!-- Add confirm button -->
-            <button class="confirm-button" onclick="confirmHeadings()">
-                CONFIRM HEADINGS
-            </button>
-
             <!-- Add macro buttons -->
             <div class="macro-buttons">
                 <!-- Speed Controls -->
@@ -326,13 +321,6 @@
             const needle = document.getElementById('altimeter-needle');
             const angle = (altitude / 1000) * 270; // Scale altitude to 0-270 degrees
             needle.style.transform = `rotate(${angle}deg) translateX(-50%)`;
-            
-            // Update vertical heading slider
-            const slider = document.getElementById('heading-y-control');
-            const value = state.heading.y;
-            const range = slider.max - slider.min;
-            const position = (value - slider.min) / range * 100;
-            slider.style.background = `linear-gradient(to right, var(--starwars-blue) ${position}%, var(--starwars-black) ${position}%)`;
         });
 
         // Store current values
@@ -342,11 +330,18 @@
             speed: 0
         };
 
-        // Update heading when sliders change
+        // Update heading when sliders change - IMMEDIATE UPDATE
         document.getElementById('heading-y-control').addEventListener('input', (e) => {
             const value = e.target.value;
             document.getElementById('heading-y').textContent = value + '°';
             currentValues.headingY = parseInt(value);
+            
+            // Emit immediately
+            socket.emit('player_action', {
+                room,
+                action: 'update_heading_y',
+                value: currentValues.headingY
+            });
             
             // Update slider position visually
             const slider = e.target;
@@ -358,30 +353,35 @@
         document.getElementById('heading-x-control').addEventListener('input', function(e) {
             currentValues.headingX = parseInt(e.target.value);
             document.getElementById('heading-x').textContent = currentValues.headingX + '°';
-        });
-        
-        // Update speed when slider changes
-        document.getElementById('speed-control').addEventListener('input', function(e) {
-            currentValues.speed = parseInt(e.target.value);
-            document.getElementById('speed').textContent = currentValues.speed;
-        });
-
-        // Send updates only when confirm button is clicked
-        function confirmHeadings() {
-            // Update heading values
-            socket.emit('player_action', {
-                room,
-                action: 'update_heading_y',
-                value: currentValues.headingY
-            });
             
+            // Emit immediately
             socket.emit('player_action', {
                 room,
                 action: 'update_heading_x',
                 value: currentValues.headingX
             });
+        });
+        
+        // Update speed when slider changes - IMMEDIATE UPDATE
+        document.getElementById('speed-control').addEventListener('input', function(e) {
+            currentValues.speed = parseInt(e.target.value);
+            document.getElementById('speed').textContent = currentValues.speed;
             
-            // Update speed
+            // Emit immediately
+            socket.emit('player_action', {
+                room,
+                action: 'update_speed',
+                value: currentValues.speed
+            });
+        });
+
+        // Macro functions
+        function setSpeed(increment) {
+            currentValues.speed = Math.max(0, Math.min(100, currentValues.speed + increment));
+            document.getElementById('speed').textContent = currentValues.speed;
+            document.getElementById('speed-control').value = currentValues.speed;
+            
+            // Emit immediately
             socket.emit('player_action', {
                 room,
                 action: 'update_speed',
@@ -389,23 +389,30 @@
             });
         }
 
-        // Macro functions
-        function setSpeed(increment) {
-            currentValues.speed = Math.max(0, Math.min(100, currentValues.speed + increment));
-            document.getElementById('speed').textContent = currentValues.speed;
-            document.getElementById('speed-control').value = currentValues.speed;
-        }
-
         function bankLeft() {
             currentValues.headingX = Math.max(-180, Math.min(180, currentValues.headingX - 10));
             document.getElementById('heading-x').textContent = currentValues.headingX + '°';
             document.getElementById('heading-x-control').value = currentValues.headingX;
+            
+            // Emit immediately
+            socket.emit('player_action', {
+                room,
+                action: 'update_heading_x',
+                value: currentValues.headingX
+            });
         }
 
         function bankRight() {
             currentValues.headingX = Math.max(-180, Math.min(180, currentValues.headingX + 10));
             document.getElementById('heading-x').textContent = currentValues.headingX + '°';
             document.getElementById('heading-x-control').value = currentValues.headingX;
+            
+            // Emit immediately
+            socket.emit('player_action', {
+                room,
+                action: 'update_heading_x',
+                value: currentValues.headingX
+            });
         }
 
         function navigateTerrain() {
@@ -417,18 +424,44 @@
             document.getElementById('heading-y').textContent = currentValues.headingY + '°';
             document.getElementById('heading-x-control').value = currentValues.headingX;
             document.getElementById('heading-y-control').value = currentValues.headingY;
+            
+            // Emit both values
+            socket.emit('player_action', {
+                room,
+                action: 'update_heading_x',
+                value: currentValues.headingX
+            });
+            socket.emit('player_action', {
+                room,
+                action: 'update_heading_y',
+                value: currentValues.headingY
+            });
         }
 
         function descend() {
             currentValues.headingY = Math.max(-90, Math.min(90, currentValues.headingY - 10));
             document.getElementById('heading-y').textContent = currentValues.headingY + '°';
             document.getElementById('heading-y-control').value = currentValues.headingY;
+            
+            // Emit immediately
+            socket.emit('player_action', {
+                room,
+                action: 'update_heading_y',
+                value: currentValues.headingY
+            });
         }
 
         function ascend() {
             currentValues.headingY = Math.max(-90, Math.min(90, currentValues.headingY + 10));
             document.getElementById('heading-y').textContent = currentValues.headingY + '°';
             document.getElementById('heading-y-control').value = currentValues.headingY;
+            
+            // Emit immediately
+            socket.emit('player_action', {
+                room,
+                action: 'update_heading_y',
+                value: currentValues.headingY
+            });
         }
 
         function punchIt() {
@@ -444,6 +477,23 @@
             document.getElementById('speed-control').value = currentValues.speed;
             document.getElementById('heading-x-control').value = currentValues.headingX;
             document.getElementById('heading-y-control').value = currentValues.headingY;
+            
+            // Emit all values
+            socket.emit('player_action', {
+                room,
+                action: 'update_heading_x',
+                value: currentValues.headingX
+            });
+            socket.emit('player_action', {
+                room,
+                action: 'update_heading_y',
+                value: currentValues.headingY
+            });
+            socket.emit('player_action', {
+                room,
+                action: 'update_speed',
+                value: currentValues.speed
+            });
         }
     </script>
 </body>
