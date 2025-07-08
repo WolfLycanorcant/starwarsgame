@@ -210,21 +210,43 @@
         
         // Real-time updates
         socket.on('state_update', (state) => {
-            const frequency = state.frequency || '121.5';
+            console.log('Comms station received state update:', state);
             
-            // Update frequency display
+            // Update frequency
+            const frequency = state.frequency || '121.5';
             frequencyDisplay.textContent = frequency + ' MHz';
             frequencySlider.value = frequency;
             frequencyInput.value = frequency;
             
-            // Update signal strength (randomized for demonstration)
-            const strength = Math.floor(Math.random() * 30) + 70; // 70-100%
+            // Update transmission status
+            transmissionStatus.textContent = state.transmission_status || 'STANDBY';
+            if (state.transmission_status === 'TRANSMITTING') {
+                transmissionStatus.style.color = 'var(--starwars-yellow)';
+            } else {
+                transmissionStatus.style.color = 'var(--text-light)';
+            }
+            
+            // Update reception status
+            receptionStatus.textContent = state.reception_status || 'ACTIVE';
+            if (state.reception_status === 'ACTIVE') {
+                receptionStatus.style.color = 'var(--starwars-green)';
+            } else {
+                receptionStatus.style.color = 'var(--starwars-red)';
+            }
+            
+            // Update signal strength
+            const strength = state.signal_strength || 75;
             signalStrength.textContent = strength + '%';
             signalLevel.style.width = strength + '%';
             
-            // Update reception status
-            receptionStatus.textContent = 'ACTIVE';
-            receptionStatus.style.color = 'var(--starwars-green)';
+            // Update last transmission
+            if (state.last_transmission) {
+                const minutes = state.last_transmission % 60;
+                const hours = Math.floor(state.last_transmission / 60);
+                lastTransmission.textContent = `${hours}h ${minutes}m`;
+            } else {
+                lastTransmission.textContent = 'None';
+            }
         });
         
         // Update frequency function

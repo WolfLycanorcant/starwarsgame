@@ -100,10 +100,20 @@ def handle_player_action(data):
         state['heading']['x'] = value
     elif action == 'update_heading_y':
         state['heading']['y'] = value
-    elif action == 'update_speed':
+    elif action == 'set_speed':
         state['speed'] = value
-    elif action == 'update_altitude':
-        state['altitude'] = value  # Altitude is now in kilometers
+    elif action == 'set_altitude':
+        state['altitude'] = value
+    elif action == 'set_frequency':
+        state['frequency'] = value
+    elif action == 'set_transmission_status':
+        state['transmission_status'] = value
+    elif action == 'set_reception_status':
+        state['reception_status'] = value
+    elif action == 'set_signal_strength':
+        state['signal_strength'] = value
+    elif action == 'set_last_transmission':
+        state['last_transmission'] = value
     
     emit('state_update', state, room=room)
     
