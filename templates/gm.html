@@ -195,28 +195,80 @@
 <body>
     <div class="container">
         <h1 class="text-3xl mb-6">GAME MASTER CONTROL</h1>
-        
-        <!-- Mission Controls -->
-        <div class="control-panel">
-            <div class="axis-control">
-                <div class="axis-label">MISSION STATUS</div>
-                <div id="mission-status" class="axis-value">Active</div>
-                <div class="macro-buttons">
-                    <button class="macro-button" onclick="GameMaster.setMissionStatus('Active')">
-                        [🟢 ACTIVE]
-                    </button>
-                    <button class="macro-button" onclick="GameMaster.setMissionStatus('Critical')">
-                        [🔴 CRITICAL]
-                    </button>
-                    <button class="macro-button" onclick="GameMaster.setMissionStatus('Complete')">
-                        [🟢 COMPLETE]
-                    </button>
+
+            <!-- Mission Control Section -->
+            <div class="control-panel">
+                <h2 class="text-2xl mb-4">MISSION CONTROL</h2>
+                <div class="axis-control">
+                    <div class="axis-label">MISSION STATUS</div>
+                    <div id="mission-status" class="axis-value">Active</div>
+                    <div class="macro-buttons">
+                        <button class="macro-button" onclick="GameMaster.setMissionStatus('Active')">
+                            [🟢 ACTIVE]
+                        </button>
+                        <button class="macro-button" onclick="GameMaster.setMissionStatus('Critical')">
+                            [🔴 CRITICAL]
+                        </button>
+                        <button class="macro-button" onclick="GameMaster.setMissionStatus('Complete')">
+                            [🟢 COMPLETE]
+                        </button>
+                    </div>
+                </div>
+                <div class="axis-control">
+                    <div class="axis-label">ALERT STATUS</div>
+                    <select id="alert-status" class="bg-black border p-2">
+                        <option>NORMAL</option>
+                        <option>YELLOW</option>
+                        <option>RED</option>
+                    </select>
                 </div>
             </div>
-        </div> 
 
-        <!-- Navigation Controls -->
+            <!-- Gunnery Section -->
+            <div class="control-panel">
+                <h2 class="text-2xl mb-4">GUNNERY</h2>
+                <div class="axis-control">
+                    <div class="axis-label">WEAPONS</div>
+                    <div class="axis-value" id="weapons-value">100%</div>
+                    <input type="number" id="weapons-status" min="0" max="100" class="bg-black border p-2">
+                </div>
+            </div>
+
+            <!-- Engineering Section -->
+            <div class="control-panel">
+                <h2 class="text-2xl mb-4">ENGINEERING</h2>
+                <div class="control-row">
+                    <div class="axis-control" style="width: 100%;">
+                        <div class="axis-label">POWER</div>
+                        <div class="axis-value" id="power-value">100</div>
+                        <input type="range" id="power-status" min="0" max="100" class="speed-control">
+                    </div>
+                </div>
+                <div class="control-row">
+                    <div class="axis-control" style="width: 100%;">
+                        <div class="axis-label">SHIELDS</div>
+                        <div class="axis-value" id="shields-value">100</div>
+                        <input type="range" id="shields-status" min="0" max="100" class="speed-control">
+                    </div>
+                </div>
+                <div class="control-row">
+                    <div class="axis-control" style="width: 100%;">
+                        <div class="axis-label">HULL PERCENTAGE</div>
+                        <div class="axis-value" id="hull-value">100</div>
+                        <input type="range" id="hull-status" min="0" max="100" class="speed-control">
+                    </div>
+                </div>
+                <div class="control-row">
+                    <div class="axis-control" style="width: 100%;">
+                        <div class="axis-label">HULL MESSAGE</div>
+                        <textarea id="hull-message" rows="2" class="bg-black border p-2 w-full"></textarea>
+                    </div>
+                </div>
+            </div>
+
+        <!-- Navigation Section -->
         <div class="control-panel">
+            <h2 class="text-2xl mb-4">NAVIGATION</h2>
             <div class="control-row">
                 <div class="axis-control">
                     <div class="axis-label">HEADING X</div>
@@ -231,68 +283,40 @@
                 <div class="axis-control">
                     <div class="axis-label">SPEED</div>
                     <div class="axis-value" id="speed">0</div>
-                    <input type="range" id="speed-control" min="0" max="100" step="1" class="vertical-slider">
+                    <input type="range" id="speed-control" min="0" max="100" class="speed-control">
                 </div>
             </div>
         </div>
 
-        <!-- Instruments -->
-        <div class="instrument-panel">
-            <!-- Radio Altimeter -->
-            <div class="radio-altimeter">
-                <div class="altimeter-dial">
-                    <div class="altimeter-needle" id="altimeter-needle"></div>
-                    <div class="altimeter-value" id="altimeter-value">0</div>
-                    <div class="altimeter-label">ALTITUDE (k)</div>
+        <!-- Communications Section -->
+        <div class="control-panel">
+            <h2 class="text-2xl mb-4">COMMUNICATIONS</h2>
+            <div class="control-row">
+                <div class="axis-control">
+                    <div class="axis-label">FREQUENCY</div>
+                    <div class="axis-value" id="frequency-value">121.5</div>
+                    <input type="number" id="frequency-status" step="0.1" class="bg-black border p-2">
+                </div>
+                <div class="axis-control">
+                    <div class="axis-label">TRANSMISSION STATUS</div>
+                    <input type="text" id="transmission-status" class="bg-black border p-2 w-full">
+                </div>
+                <div class="axis-control">
+                    <div class="axis-label">RECEPTION STATUS</div>
+                    <input type="text" id="reception-status" class="bg-black border p-2 w-full">
                 </div>
             </div>
-            
-            <!-- Artificial Horizon -->
-            <div class="artificial-horizon">
-                <div class="horizon-line"></div>
-                <div class="pitch-indicator"></div>
-                <div class="roll-indicator"></div>
-            </div>
-        </div>
-
-        <div class="control-row">
-            <div class="axis-control">
-                <div class="axis-label">ALERT STATUS</div>
-                <select id="alert-status" class="bg-black border p-2">
-                    <option>NORMAL</option>
-                    <option>YELLOW</option>
-                    <option>RED</option>
-                </select>
-            </div>
-            <div class="axis-control">
-                <div class="axis-label">WEAPONS</div>
-                <div class="axis-value" id="weapons-value">100%</div>
-                <input type="number" id="weapons-status" min="0" max="100" class="bg-black border p-2">
-            </div>
-            <div class="axis-control">
-                <div class="axis-label">POWER</div>
-                <div class="axis-value" id="power-value">100%</div>
-                <input type="number" id="power-status" min="0" max="100" class="bg-black border p-2">
-            </div>
-            <div class="axis-control">
-                <div class="axis-label">ALTITUDE</div>
-                <div class="axis-value" id="altitude-value">0k</div>
-                <input type="number" id="altitude-status" min="0" max="100" step="0.1" class="bg-black border p-2">
-            </div>
-        </div>
-        <div class="axis-control" style="width: 100%;">
-            <div class="axis-label">HULL MESSAGE</div>
-            <textarea id="hull-message" rows="2" class="bg-black border p-2 w-full"></textarea>
-        </div>
-        
-        <!-- Communications Controls -->
-        <div class="gm-control">
-            <h2>Communications</h2>
-            <div class="grid">
-                <div>
-                    <label class="gm-label">Current Frequency</label>
-                    <div id="current-frequency" class="gm-value">121.5</div>
-                    <input type="number" id="new-frequency" step="0.1" class="bg-black border p-2 w-full" placeholder="Enter frequency">
+            <div class="control-row">
+                <div class="axis-control">
+                    <div class="axis-label">SIGNAL STRENGTH</div>
+                    <input type="range" id="signal-strength" min="0" max="100" class="speed-control">
+                    <div class="axis-value" id="signal-strength-value">75%</div>
+                </div>
+                <div class="axis-control">
+                    <div class="axis-label">LAST TRANSMISSION</div>
+                    <div class="axis-value" id="last-transmission">0h 0m</div>
+                    <input type="number" id="transmission-hours" min="0" placeholder="Hours" class="bg-black border p-2 w-full">
+                    <input type="number" id="transmission-minutes" min="0" placeholder="Minutes" class="bg-black border p-2 w-full">
                 </div>
             </div>
         </div>
@@ -314,10 +338,23 @@
                 speed: document.getElementById('speed'),
                 alertStatus: document.getElementById('alert-status'),
                 weaponsStatus: document.getElementById('weapons-status'),
+                weaponsValue: document.getElementById('weapons-value'),
                 powerStatus: document.getElementById('power-status'),
-                altitudeStatus: document.getElementById('altitude-status'),
+                powerValue: document.getElementById('power-value'),
+                hullStatus: document.getElementById('hull-status'),
+                hullValue: document.getElementById('hull-value'),
                 hullMessage: document.getElementById('hull-message'),
-                newFrequency: document.getElementById('new-frequency'),
+                shieldsStatus: document.getElementById('shields-status'),
+                shieldsValue: document.getElementById('shields-value'),
+                frequencyValue: document.getElementById('frequency-value'),
+                frequencyStatus: document.getElementById('frequency-status'),
+                transmissionStatus: document.getElementById('transmission-status'),
+                receptionStatus: document.getElementById('reception-status'),
+                signalStrength: document.getElementById('signal-strength'),
+                signalStrengthValue: document.getElementById('signal-strength-value'),
+                lastTransmission: document.getElementById('last-transmission'),
+                transmissionHours: document.getElementById('transmission-hours'),
+                transmissionMinutes: document.getElementById('transmission-minutes'),
                 // Instrument elements
                 pitchIndicator: document.querySelector('.artificial-horizon .pitch-indicator'),
                 rollIndicator: document.querySelector('.artificial-horizon .roll-indicator'),
@@ -384,39 +421,110 @@
                 });
 
                 // System controls
-                document.getElementById('alert-status').addEventListener('change', (e) => {
-                    const value = e.target.value;
-                    this.elements.alertStatus.value = value;
-                    this.socket.emit('gm_update', {
-                        room: this.room,
-                        changes: { alert: value }
-                    });
-                });
-
-                document.getElementById('altitude-status').addEventListener('input', (e) => {
-                    const value = parseInt(e.target.value);
-                    this.elements.altitudeStatus.value = value;
-                    this.socket.emit('gm_update', {
-                        room: this.room,
-                        changes: { altitude: value }
-                    });
-                });
-
                 document.getElementById('weapons-status').addEventListener('input', (e) => {
                     const value = parseInt(e.target.value);
-                    this.elements.weaponsStatus.value = value;
+                    this.elements.weaponsValue.textContent = value + '%';
                     this.socket.emit('gm_update', {
                         room: this.room,
                         changes: { systems: { weapons: value } }
                     });
                 });
 
+                document.getElementById('shields-status').addEventListener('input', (e) => {
+                    const value = parseInt(e.target.value);
+                    this.elements.shieldsValue.textContent = value;
+                    this.socket.emit('gm_update', {
+                        room: this.room,
+                        changes: { systems: { shields: value } }
+                    });
+                });
+
                 document.getElementById('power-status').addEventListener('input', (e) => {
                     const value = parseInt(e.target.value);
-                    this.elements.powerStatus.value = value;
+                    this.elements.powerValue.textContent = value + '%';
                     this.socket.emit('gm_update', {
                         room: this.room,
                         changes: { systems: { power: value } }
+                    });
+                });
+
+                document.getElementById('hull-status').addEventListener('input', (e) => {
+                    const value = parseInt(e.target.value);
+                    this.elements.hullValue.textContent = value + '%';
+                    this.socket.emit('gm_update', {
+                        room: this.room,
+                        changes: { systems: { hull: value } }
+                    });
+                });
+
+                document.getElementById('hull-message').addEventListener('input', (e) => {
+                    const value = e.target.value;
+                    this.socket.emit('gm_update', {
+                        room: this.room,
+                        changes: { systems: { hull_message: value } }
+                    });
+                });
+
+                document.getElementById('alert-status').addEventListener('change', (e) => {
+                    const value = e.target.value;
+                    this.socket.emit('gm_update', {
+                        room: this.room,
+                        changes: { alert: value }
+                    });
+                });
+
+                // Communications controls
+                document.getElementById('frequency-status').addEventListener('input', (e) => {
+                    const value = parseFloat(e.target.value).toFixed(1);
+                    this.elements.frequencyValue.textContent = value;
+                    this.socket.emit('gm_update', {
+                        room: this.room,
+                        changes: { frequency: value }
+                    });
+                });
+
+                document.getElementById('transmission-status').addEventListener('input', (e) => {
+                    const value = e.target.value;
+                    this.socket.emit('gm_update', {
+                        room: this.room,
+                        changes: { transmission_status: value }
+                    });
+                });
+
+                document.getElementById('reception-status').addEventListener('input', (e) => {
+                    const value = e.target.value;
+                    this.socket.emit('gm_update', {
+                        room: this.room,
+                        changes: { reception_status: value }
+                    });
+                });
+
+                document.getElementById('signal-strength').addEventListener('input', (e) => {
+                    const value = parseInt(e.target.value);
+                    this.elements.signalStrengthValue.textContent = value + '%';
+                    this.socket.emit('gm_update', {
+                        room: this.room,
+                        changes: { signal_strength: value }
+                    });
+                });
+
+                document.getElementById('transmission-hours').addEventListener('input', (e) => {
+                    const hours = parseInt(e.target.value) || 0;
+                    const minutes = parseInt(document.getElementById('transmission-minutes').value) || 0;
+                    const totalMinutes = hours * 60 + minutes;
+                    this.socket.emit('gm_update', {
+                        room: this.room,
+                        changes: { last_transmission: totalMinutes }
+                    });
+                });
+
+                document.getElementById('transmission-minutes').addEventListener('input', (e) => {
+                    const minutes = parseInt(e.target.value) || 0;
+                    const hours = parseInt(document.getElementById('transmission-hours').value) || 0;
+                    const totalMinutes = hours * 60 + minutes;
+                    this.socket.emit('gm_update', {
+                        room: this.room,
+                        changes: { last_transmission: totalMinutes }
                     });
                 });
 
@@ -432,23 +540,6 @@
             // Update UI from state
             updateUI(state) {
                 // Update instrument displays
-                this.updateInstruments(state);
-                
-                // Update control values
-                this.elements.headingX.textContent = state.heading.x + '°';
-                this.elements.headingY.textContent = state.heading.y + '°';
-                this.elements.speed.textContent = state.speed;
-                this.elements.alertStatus.value = state.alert;
-                this.elements.altitudeStatus.value = state.altitude;
-                this.elements.weaponsStatus.value = state.systems.weapons;
-                this.elements.powerStatus.value = state.systems.power;
-                this.elements.hullMessage.value = state.systems.hull_message;
-                this.elements.newFrequency.value = state.frequency;
-                this.elements.missionStatus.textContent = state.mission_status || 'Active';
-            },
-
-            // Update instrument displays
-            updateInstruments(state) {
                 if (this.elements.pitchIndicator && this.elements.rollIndicator) {
                     this.elements.pitchIndicator.style.transform = `rotate(${-state.heading.y}deg) translateX(-50%) translateY(-10%) scaleX(-1)`;
                     this.elements.rollIndicator.style.transform = `rotate(${state.heading.x}deg) translateY(-50%) scaleX(-1)`;
@@ -463,9 +554,32 @@
                     }
                 }
                 
-                // Update altitude value display
-                if (this.elements.altitudeStatus) {
-                    this.elements.altitudeStatus.value = state.altitude;
+                // Update control values
+                this.elements.headingX.textContent = state.heading.x + '°';
+                this.elements.headingY.textContent = state.heading.y + '°';
+                this.elements.speed.textContent = state.speed;
+                this.elements.alertStatus.value = state.alert;
+                this.elements.weaponsStatus.value = state.systems.weapons;
+                this.elements.weaponsValue.textContent = state.systems.weapons + '%';
+                this.elements.powerStatus.value = state.systems.power;
+                this.elements.powerValue.textContent = state.systems.power + '%';
+                this.elements.hullStatus.value = state.systems.hull;
+                this.elements.hullValue.textContent = state.systems.hull + '%';
+                this.elements.hullMessage.value = state.systems.hull_message || 'All systems nominal';
+                
+                // Update communications
+                this.elements.frequencyValue.textContent = state.frequency || '121.5';
+                this.elements.frequencyStatus.value = state.frequency || '121.5';
+                this.elements.transmissionStatus.value = state.transmission_status || 'Standby';
+                this.elements.receptionStatus.value = state.reception_status || 'Active';
+                this.elements.signalStrength.value = state.signal_strength || 75;
+                this.elements.signalStrengthValue.textContent = (state.signal_strength || 75) + '%';
+                
+                // Update last transmission time
+                if (state.last_transmission) {
+                    const minutes = state.last_transmission % 60;
+                    const hours = Math.floor(state.last_transmission / 60);
+                    this.elements.lastTransmission.textContent = `${hours}h ${minutes}m`;
                 }
             },
 

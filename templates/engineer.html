@@ -4,32 +4,176 @@
     <title>Engineer Station</title>
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        :root {
+            --starwars-blue: #007bff;
+            --starwars-red: #dc3545;
+            --starwars-green: #22b14c;
+            --bg-dark: #111;
+            --text-light: #fff;
+        }
+        
+        body {
+            background: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Arial', sans-serif;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .status-card {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border: 2px solid var(--starwars-blue);
+            border-radius: 10px;
+        }
+        
+        .status-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .status-message {
+            font-size: 1.2em;
+            color: var(--starwars-yellow);
+            margin: 10px 0;
+        }
+        
+        .warning {
+            color: var(--starwars-red);
+        }
+        
+        .critical {
+            color: var(--starwars-red);
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .control-panel {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border: 2px solid var(--starwars-green);
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+        }
+
+        .slider-label {
+            width: 150px;
+            font-size: 1.2em;
+        }
+
+        .slider {
+            flex: 1;
+            margin: 0 20px;
+        }
+
+        .slider-value {
+            width: 60px;
+            text-align: right;
+            font-size: 1.2em;
+        }
+
+        .button {
+            background: var(--starwars-green);
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .button:hover {
+            background: var(--starwars-blue);
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1 class="text-3xl mb-6">ENGINEERING STATION</h1>
-        
-        <div class="control-panel">
-            <div class="grid">
-                <div>
-                    <h3>Hull Integrity:</h3>
-                    <div id="hull" class="text-4xl">100%</div>
-                    <div id="hull-message" class="text-2xl mt-2"></div>
-                </div>
-                <div>
-                    <h3>Power Level:</h3>
-                    <div id="power" class="text-4xl">100%</div>
-                </div>
+        <div class="header">
+            <h1 class="text-4xl mb-4">ENGINEERING STATUS</h1>
+            <p class="text-lg">Real-time system monitoring</p>
+        </div>
+
+        <div class="status-grid">
+            <!-- Alert Status -->
+            <div class="status-card">
+                <h2>ALERT STATUS</h2>
+                <div id="alert-value" class="status-value">NORMAL</div>
+                <div id="alert-status" class="status-message">All clear</div>
             </div>
             
-            <div class="mt-8">
-                <label>Power Allocation:</label>
-                <input type="range" id="power-slider" min="0" max="100" class="w-full mt-2">
-                <button onclick="adjustPower()" class="bg-green-600 px-6 py-3 mt-4">
-                    Adjust Power
-                </button>
+            <!-- Hull Status -->
+            <div class="status-card">
+                <h2>HULL INTEGRITY</h2>
+                <div id="hull-value" class="status-value">100%</div>
+                <div id="hull-message" class="status-message" style="min-height: 60px; white-space: pre-wrap;">All systems nominal</div>
+            </div>
+
+            <!-- Power Status -->
+            <div class="status-card">
+                <h2>POWER LEVEL</h2>
+                <div id="power-value" class="status-value">100%</div>
+                <div id="power-status" class="status-message">Optimal</div>
+            </div>
+
+            <!-- Shields Status -->
+            <div class="status-card">
+                <h2>SHIELDS</h2>
+                <div id="shields-value" class="status-value">100%</div>
+                <div id="shields-status" class="status-message">Active</div>
             </div>
         </div>
+
+        <div class="control-panel">
+            <h2>SYSTEM CONTROLS</h2>
+            
+            <!-- Power Control -->
+            <div class="slider-container">
+                <div class="slider-label">Power Level:</div>
+                <input type="range" id="power-slider" min="0" max="100" value="100" class="slider">
+                <div class="slider-value" id="power-slider-value">100%</div>
+            </div>
+            
+            <!-- Shields Control -->
+            <div class="slider-container">
+                <div class="slider-label">Shields:</div>
+                <input type="range" id="shields-slider" min="0" max="100" value="100" class="slider">
+                <div class="slider-value" id="shields-slider-value">100%</div>
+            </div>
+            
+            <button class="button" onclick="updateSystems()">Apply Changes</button>
+        </div>
+
+
     </div>
 
     <script>
@@ -37,21 +181,156 @@
         const room = params.get('room');
         const socket = io();
         
+        // Initialize connection
         socket.emit('join', { room, station: 'engineer' });
         
-        socket.on('state_update', (state) => {
-            document.getElementById('hull').textContent = state.systems.hull + '%';
-            document.getElementById('power').textContent = state.systems.power + '%';
-            document.getElementById('hull-message').textContent = state.systems.hull_message || '';
+        // Add connection status logging
+        socket.on('connect', () => {
+            console.log('Engineering: Connected to server');
+            console.log('Engineering: Room:', room);
+        });
+
+        socket.on('disconnect', () => {
+            console.log('Engineering: Disconnected from server');
         });
         
-        function adjustPower() {
+        // Real-time state updates with detailed logging
+        socket.on('state_update', (state) => {
+            console.log('Engineering: Received state update:', state);
+            console.log('Engineering: Hull:', state.systems?.hull);
+            console.log('Engineering: Hull message:', state.systems?.hull_message);
+            console.log('Engineering: Power:', state.systems?.power);
+            console.log('Engineering: Shields:', state.systems?.shields);
+            console.log('Engineering: Alert:', state.alert);
+            
+            updateHullStatus(state.systems?.hull, state.systems?.hull_message);
+            updatePowerStatus(state.systems?.power);
+            updateShieldsStatus(state.systems?.shields);
+            updateAlertStatus(state.alert);
+        });
+
+        // Hull status update
+        function updateHullStatus(percentage, message) {
+            const hullValue = document.getElementById('hull-value');
+            const hullMessage = document.getElementById('hull-message');
+            
+            if(!hullValue || !hullMessage) {
+                console.error('Missing hull status elements');
+                return;
+            }
+            
+            if(percentage) {
+                hullValue.textContent = `${percentage}%`;
+                hullMessage.textContent = message || 'All systems nominal';
+                
+                if(percentage <= 25) {
+                    hullValue.className = 'status-value critical';
+                    hullMessage.className = 'status-message critical';
+                } else if(percentage <= 50) {
+                    hullValue.className = 'status-value warning';
+                    hullMessage.className = 'status-message warning';
+                } else {
+                    hullValue.className = 'status-value';
+                    hullMessage.className = 'status-message';
+                }
+            }
+        }
+
+        // Power status update
+        function updatePowerStatus(percentage) {
+            const powerValue = document.getElementById('power-value');
+            const powerStatus = document.getElementById('power-status');
+            
+            powerValue.textContent = `${percentage}%`;
+            document.getElementById('power-slider').value = percentage;
+            document.getElementById('power-slider-value').textContent = `${percentage}%`;
+            
+            if(percentage <= 25) {
+                powerStatus.textContent = 'CRITICAL - Power failure imminent!';
+                powerStatus.className = 'status-message critical';
+            } else if(percentage <= 50) {
+                powerStatus.textContent = 'WARNING - Power levels critical';
+                powerStatus.className = 'status-message warning';
+            } else {
+                powerStatus.textContent = 'Optimal';
+                powerStatus.className = 'status-message';
+            }
+        }
+
+        // Shields status update
+        function updateShieldsStatus(percentage) {
+            const shieldsValue = document.getElementById('shields-value');
+            const shieldsStatus = document.getElementById('shields-status');
+            
+            shieldsValue.textContent = `${percentage}%`;
+            document.getElementById('shields-slider').value = percentage;
+            document.getElementById('shields-slider-value').textContent = `${percentage}%`;
+            
+            if(percentage <= 25) {
+                shieldsStatus.textContent = 'CRITICAL - Shields failing';
+                shieldsStatus.className = 'status-message critical';
+            } else if(percentage <= 50) {
+                shieldsStatus.textContent = 'WARNING - Shields at reduced capacity';
+                shieldsStatus.className = 'status-message warning';
+            } else {
+                shieldsStatus.textContent = 'Active';
+                shieldsStatus.className = 'status-message';
+            }
+        }
+
+        // Alert status update
+        function updateAlertStatus(alert) {
+            const alertValue = document.getElementById('alert-value');
+            const alertStatus = document.getElementById('alert-status');
+            
+            if(!alertValue || !alertStatus) {
+                console.error('Missing alert status elements');
+                return;
+            }
+            
+            if(alert) {
+                alertValue.textContent = alert.toUpperCase();
+                alertStatus.textContent = alert;
+                
+                if(alert.toLowerCase() === 'critical') {
+                    alertValue.className = 'status-value critical';
+                    alertStatus.className = 'status-message critical';
+                } else if(alert.toLowerCase() === 'warning') {
+                    alertValue.className = 'status-value warning';
+                    alertStatus.className = 'status-message warning';
+                } else {
+                    alertValue.className = 'status-value';
+                    alertStatus.className = 'status-message';
+                }
+            }
+        }
+
+        // Update system controls
+        function updateSystems() {
+            const powerValue = document.getElementById('power-slider').value;
+            const shieldsValue = document.getElementById('shields-slider').value;
+            
             socket.emit('player_action', {
                 room,
-                action: 'adjust_power',
-                value: document.getElementById('power-slider').value
+                action: 'set_power',
+                value: parseInt(powerValue)
+            });
+            
+            socket.emit('player_action', {
+                room,
+                action: 'set_shields',
+                value: parseInt(shieldsValue)
             });
         }
+
+        // Update slider values in real-time
+        document.getElementById('power-slider').addEventListener('input', (e) => {
+            document.getElementById('power-slider-value').textContent = e.target.value + '%';
+        });
+
+        document.getElementById('shields-slider').addEventListener('input', (e) => {
+            document.getElementById('shields-slider-value').textContent = e.target.value + '%';
+        });
     </script>
 </body>
 </html>

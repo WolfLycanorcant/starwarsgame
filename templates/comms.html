@@ -4,52 +4,188 @@
     <title>Communications Station</title>
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        :root {
+            --starwars-blue: #007bff;
+            --starwars-yellow: #ffd700;
+            --starwars-red: #dc3545;
+            --starwars-green: #22b14c;
+            --bg-dark: #111;
+            --text-light: #fff;
+        }
+        
+        body {
+            background: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .control-panel {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border: 2px solid var(--starwars-blue);
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .frequency-display {
+            font-size: 3em;
+            text-align: center;
+            margin: 20px 0;
+            color: var(--starwars-yellow);
+        }
+        
+        .frequency-slider {
+            width: 100%;
+            margin: 20px 0;
+        }
+        
+        .frequency-input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #222;
+            color: #fff;
+            border: 2px solid var(--starwars-blue);
+            border-radius: 5px;
+        }
+        
+        .status-panel {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+        
+        .status-indicator {
+            padding: 10px;
+            border: 2px solid var(--starwars-green);
+            border-radius: 5px;
+            text-align: center;
+            flex: 1;
+            margin: 0 10px;
+        }
+        
+        .signal-meter {
+            height: 20px;
+            background: #333;
+            border-radius: 10px;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .signal-level {
+            height: 100%;
+            background: var(--starwars-green);
+            border-radius: 10px;
+            width: 75%;
+            transition: width 0.3s;
+        }
+        
+        .button {
+            background: var(--starwars-blue);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 0;
+            width: 100%;
+        }
+        
+        .button:hover {
+            background: var(--starwars-yellow);
+            color: #000;
+        }
+        
+        .preset-frequencies {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .preset-button {
+            background: var(--starwars-yellow);
+            color: #000;
+            border: 2px solid var(--starwars-blue);
+            padding: 10px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        
+        .preset-button:hover {
+            background: var(--starwars-blue);
+            color: #fff;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1 class="text-3xl mb-6">COMMUNICATIONS STATION</h1>
-        
+        <div class="header">
+            <h1 class="text-4xl mb-4">COMMUNICATIONS STATION</h1>
+            <p class="text-lg">Frequency Control and Transmission</p>
+        </div>
+
         <div class="control-panel">
-            <style>
-            .control-panel {
-                margin-bottom: 20px;
-            }
-            .gm-label {
-                display: block;
-                margin-bottom: 5px;
-            }
-            .frequency-slider {
-                width: 20px;
-                height: 200px;
-                -webkit-appearance: slider-vertical;
-                transform: rotate(180deg);
-            }
-            .frequency-slider::-webkit-slider-thumb {
-                -webkit-appearance: none;
-                width: 20px;
-                height: 20px;
-                background: var(--starwars-yellow);
-                cursor: pointer;
-            }
-            .gm-value {
-                font-size: 1.5em;
-                margin: 5px 0;
-                text-align: center;
-            }
-            </style>
-            <div class="grid">
-                <div>
-                    <h3>Current Frequency:</h3>
-                    <div id="frequency" class="text-4xl gm-value">121.5</div>
-                    <input type="range" id="freq-slider" min="118" max="123" step="0.1" class="frequency-slider">
+            <h2>FREQUENCY CONTROL</h2>
+            
+            <div class="frequency-display" id="frequency-display">121.5 MHz</div>
+            
+            <input type="range" id="frequency-slider" min="118" max="123" step="0.1" class="frequency-slider">
+            
+            <input type="number" id="frequency-input" step="0.1" class="frequency-input" placeholder="Enter frequency (MHz)">
+            
+            <button onclick="updateFrequency()" class="button">UPDATE FREQUENCY</button>
+            
+            <div class="preset-frequencies">
+                <button class="preset-button" onclick="setPresetFrequency(121.5)">121.5 (Emergency)</button>
+                <button class="preset-button" onclick="setPresetFrequency(122.0)">122.0 (Squad)</button>
+                <button class="preset-button" onclick="setPresetFrequency(123.0)">123.0 (Command)</button>
+                <button class="preset-button" onclick="setPresetFrequency(120.5)">120.5 (Science)</button>
+                <button class="preset-button" onclick="setPresetFrequency(119.5)">119.5 (Medical)</button>
+                <button class="preset-button" onclick="setPresetFrequency(118.5)">118.5 (Navigation)</button>
+            </div>
+        </div>
+
+        <div class="control-panel">
+            <h2>STATUS</h2>
+            
+            <div class="status-panel">
+                <div class="status-indicator">
+                    <h3>TRANSMISSION</h3>
+                    <div id="transmission-status">STANDBY</div>
+                </div>
+                <div class="status-indicator">
+                    <h3>RECEPTION</h3>
+                    <div id="reception-status">ACTIVE</div>
                 </div>
             </div>
             
-            <div class="mt-8">
-                <input type="number" id="new-freq" class="bg-black border p-2 w-full" placeholder="New frequency">
-                <button onclick="changeFrequency()" class="bg-yellow-600 px-6 py-3 mt-4">
-                    Update Frequency
-                </button>
+            <div class="signal-meter">
+                <div class="signal-level" id="signal-level"></div>
+            </div>
+            
+            <div class="status-panel">
+                <div class="status-indicator">
+                    <h3>SIGNAL STRENGTH</h3>
+                    <div id="signal-strength">75%</div>
+                </div>
+                <div class="status-indicator">
+                    <h3>LAST TRANSMISSION</h3>
+                    <div id="last-transmission">None</div>
+                </div>
             </div>
         </div>
     </div>
@@ -59,23 +195,92 @@
         const room = params.get('room');
         const socket = io();
         
+        // Initialize connection
         socket.emit('join', { room, station: 'comms' });
         
+        // Get DOM elements
+        const frequencyDisplay = document.getElementById('frequency-display');
+        const frequencySlider = document.getElementById('frequency-slider');
+        const frequencyInput = document.getElementById('frequency-input');
+        const transmissionStatus = document.getElementById('transmission-status');
+        const receptionStatus = document.getElementById('reception-status');
+        const signalLevel = document.getElementById('signal-level');
+        const signalStrength = document.getElementById('signal-strength');
+        const lastTransmission = document.getElementById('last-transmission');
+        
+        // Real-time updates
         socket.on('state_update', (state) => {
-            document.getElementById('frequency').textContent = state.frequency || '121.5';
-            document.getElementById('freq-slider').value = state.frequency || '121.5';
+            const frequency = state.frequency || '121.5';
+            
+            // Update frequency display
+            frequencyDisplay.textContent = frequency + ' MHz';
+            frequencySlider.value = frequency;
+            frequencyInput.value = frequency;
+            
+            // Update signal strength (randomized for demonstration)
+            const strength = Math.floor(Math.random() * 30) + 70; // 70-100%
+            signalStrength.textContent = strength + '%';
+            signalLevel.style.width = strength + '%';
+            
+            // Update reception status
+            receptionStatus.textContent = 'ACTIVE';
+            receptionStatus.style.color = 'var(--starwars-green)';
         });
         
-        function changeFrequency() {
-            const freq = document.getElementById('new-freq').value;
-            document.getElementById('frequency').textContent = freq;
-            document.getElementById('freq-slider').value = freq;
+        // Update frequency function
+        function updateFrequency() {
+            const freq = parseFloat(frequencyInput.value || frequencySlider.value).toFixed(1);
+            
+            // Validate frequency range
+            if (freq < 118 || freq > 123) {
+                alert('Frequency must be between 118.0 and 123.0 MHz');
+                return;
+            }
+            
+            // Update UI
+            frequencyDisplay.textContent = freq + ' MHz';
+            frequencySlider.value = freq;
+            frequencyInput.value = freq;
+            
+            // Send update to server
             socket.emit('player_action', {
                 room,
                 action: 'set_frequency',
                 value: freq
             });
+            
+            // Update transmission status
+            transmissionStatus.textContent = 'TRANSMITTING';
+            transmissionStatus.style.color = 'var(--starwars-yellow)';
+            
+            // Record last transmission time
+            const now = new Date().toLocaleTimeString();
+            lastTransmission.textContent = now;
+            
+            // Reset transmission status after a short delay
+            setTimeout(() => {
+                transmissionStatus.textContent = 'STANDBY';
+                transmissionStatus.style.color = 'var(--text-light)';
+            }, 2000);
         }
+        
+        // Set preset frequency
+        function setPresetFrequency(freq) {
+            frequencyInput.value = freq;
+            updateFrequency();
+        }
+        
+        // Allow direct slider input
+        frequencySlider.addEventListener('input', (e) => {
+            const value = parseFloat(e.target.value).toFixed(1);
+            frequencyInput.value = value;
+        });
+        
+        // Allow direct number input
+        frequencyInput.addEventListener('change', (e) => {
+            const value = parseFloat(e.target.value).toFixed(1);
+            frequencySlider.value = value;
+        });
     </script>
 </body>
 </html>

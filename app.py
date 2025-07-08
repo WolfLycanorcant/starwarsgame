@@ -6,6 +6,15 @@ app = Flask(__name__)
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
+# Helper function for deep merging dictionaries
+def deep_update(source, overrides):
+    for key, value in overrides.items():
+        if isinstance(value, dict) and key in source:
+            deep_update(source[key], value)
+        else:
+            source[key] = value
+    return source
+
 rooms = {}
 
 @app.route('/')
@@ -58,9 +67,15 @@ def handle_join(data):
 def handle_gm_update(data):
     room = data['room']
     if room in rooms:
-        rooms[room]['state'].update(data['changes'])
+        print(f"Server: Received GM update for room {room}")
+        print(f"Server: Changes to apply: {data['changes']}")
+        
+        # Deep merge changes into the state
+        deep_update(rooms[room]['state'], data['changes'])
+        
+        print(f"Server: Updated state: {rooms[room]['state']} (systems: {rooms[room]['state'].get('systems', {})})")
         emit('state_update', rooms[room]['state'], room=room)
-        print(f"GM updated room {room}: {data['changes']}")
+        print(f"Server: Broadcasted state update to room {room}")
 
 @socketio.on('player_action')
 def handle_player_action(data):
