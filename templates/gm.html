@@ -53,6 +53,65 @@
             --starwars-blue: #007bff;
             --starwars-green: #22b14c;
             --starwars-yellow: #ffd700;
+            --starwars-red: #dc3545;
+            --bg-dark: #111;
+            --text-light: #fff;
+        }
+        
+        body {
+            background: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .channel-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .channel-btn {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid var(--starwars-blue);
+            color: var(--text-light);
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 120px;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .channel-btn:hover {
+            border-color: var(--starwars-yellow);
+        }
+        
+        .channel-number {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .channel-label {
+            font-size: 0.9em;
+        }
+        
+        .channel-btn.emergency {
+            border-color: var(--starwars-red);
+        }
+        
+        .channel-btn.command {
+            border-color: var(--starwars-blue);
+        }
+        
+        .channel-btn.speech {
+            border-color: var(--starwars-yellow);
+        }
+        
+        .channel-btn.medical {
+            border-color: var(--starwars-green);
         }
         
         .artificial-horizon {
@@ -298,16 +357,75 @@
                     <input type="number" id="frequency-status" step="0.1" class="bg-black border p-2">
                 </div>
                 <div class="axis-control">
+                    <div class="axis-label">HIDDEN FREQUENCY</div>
+                    <input type="number" id="hidden-frequency" step="0.1" class="bg-black border p-2 w-full" placeholder="Enter hidden frequency">
+                    <button onclick="GameMaster.setHiddenFrequency()" class="bg-red-600 px-3 py-1 mt-2">SET</button>
+                </div>
+                <div class="axis-control">
+                    <div class="axis-label">CHANNEL BUTTONS</div>
+                    <div class="channel-buttons">
+                        <button class="channel-btn emergency" onclick="GameMaster.updateFrequency('121.5')">
+                            <span class="channel-number">121.5</span>
+                            <span class="channel-label">Emergency</span>
+                        </button>
+                        <button class="channel-btn speech" onclick="GameMaster.updateFrequency('122.0')">
+                            <span class="channel-number">122.0</span>
+                            <span class="channel-label">Speech</span>
+                        </button>
+                        <button class="channel-btn command" onclick="GameMaster.updateFrequency('123.0')">
+                            <span class="channel-number">123.0</span>
+                            <span class="channel-label">Command</span>
+                        </button>
+                        <button class="channel-btn science" onclick="GameMaster.updateFrequency('120.5')">
+                            <span class="channel-number">120.5</span>
+                            <span class="channel-label">Science</span>
+                        </button>
+                        <button class="channel-btn medical" onclick="GameMaster.updateFrequency('119.5')">
+                            <span class="channel-number">119.5</span>
+                            <span class="channel-label">Medical</span>
+                        </button>
+                        <button class="channel-btn navigation" onclick="GameMaster.updateFrequency('118.5')">
+                            <span class="channel-number">118.5</span>
+                            <span class="channel-label">Navigation</span>
+                        </button>
+                    </div>
+                    <div class="axis-control">
+                        <div class="axis-label">HIDDEN FREQUENCY</div>
+                        <input type="number" id="hidden-frequency" step="0.1" class="bg-black border p-2 w-full" placeholder="Enter hidden frequency">
+                        <button onclick="GameMaster.setHiddenFrequency()" class="bg-red-600 px-3 py-1 mt-2">SET</button>
+                    </div>
+                </div>
+                <div class="axis-control">
                     <div class="axis-label">TRANSMISSION STATUS</div>
-                    <input type="text" id="transmission-status" class="bg-black border p-2 w-full">
+                    <select id="transmission-status" class="bg-black border p-2 w-full">
+                        <option value="STANDBY">STANDBY - Ready to transmit</option>
+                        <option value="TRANSMITTING">TRANSMITTING - Active transmission</option>
+                        <option value="PAUSED">PAUSED - Transmission paused</option>
+                        <option value="BUFFERING">BUFFERING - Data queueing</option>
+                        <option value="ERROR">ERROR - Transmission failure</option>
+                        <option value="SECURED">SECURED - Encrypted transmission</option>
+                        <option value="JAMMED">JAMMED - Jamming detected</option>
+                        <option value="DEGRADED">DEGRADED - Signal quality low</option>
+                        <option value="OVERLOAD">OVERLOAD - Channel congestion</option>
+                        <option value="OFFLINE">OFFLINE - System offline</option>
+                    </select>
                 </div>
                 <div class="axis-control">
                     <div class="axis-label">RECEPTION STATUS</div>
-                    <input type="text" id="reception-status" class="bg-black border p-2 w-full">
+                    <select id="reception-status" class="bg-black border p-2 w-full">
+                        <option value="STANDBY">STANDBY - Ready to receive</option>
+                        <option value="RECEIVING">RECEIVING - Active reception</option>
+                        <option value="BUFFERING">BUFFERING - Data queueing</option>
+                        <option value="ERROR">ERROR - Reception failure</option>
+                        <option value="SECURED">SECURED - Encrypted reception</option>
+                        <option value="JAMMED">JAMMED - Jamming detected</option>
+                        <option value="DEGRADED">DEGRADED - Signal quality low</option>
+                        <option value="OVERLOAD">OVERLOAD - Channel congestion</option>
+                        <option value="OFFLINE">OFFLINE - System offline</option>
+                        <option value="RECEIVING_TRANSMISSION">RECEIVING TRANSMISSION</option>
+                    </select>
                 </div>
             </div>
-            <div class="control-row">
-                <div class="axis-control">
                     <div class="axis-label">SIGNAL STRENGTH</div>
                     <input type="range" id="signal-strength" min="0" max="100" class="speed-control">
                     <div class="axis-value" id="signal-strength-value">75%</div>
@@ -355,6 +473,7 @@
                 lastTransmission: document.getElementById('last-transmission'),
                 transmissionHours: document.getElementById('transmission-hours'),
                 transmissionMinutes: document.getElementById('transmission-minutes'),
+                hiddenFrequency: document.getElementById('hidden-frequency'),
                 // Instrument elements
                 pitchIndicator: document.querySelector('.artificial-horizon .pitch-indicator'),
                 rollIndicator: document.querySelector('.artificial-horizon .roll-indicator'),
@@ -483,7 +602,8 @@
                     });
                 });
 
-                document.getElementById('transmission-status').addEventListener('input', (e) => {
+                // Transmission status dropdown
+                document.getElementById('transmission-status').addEventListener('change', (e) => {
                     const value = e.target.value;
                     this.socket.emit('gm_update', {
                         room: this.room,
@@ -491,7 +611,8 @@
                     });
                 });
 
-                document.getElementById('reception-status').addEventListener('input', (e) => {
+                // Reception status dropdown
+                document.getElementById('reception-status').addEventListener('change', (e) => {
                     const value = e.target.value;
                     this.socket.emit('gm_update', {
                         room: this.room,
@@ -537,8 +658,32 @@
                 });
             },
 
+            // Update frequency
+            updateFrequency: function(freq) {
+                this.socket.emit('gm_update', {
+                    room: this.room,
+                    changes: { frequency: freq }
+                });
+            },
+
+            setHiddenFrequency: function() {
+                const freq = parseFloat(this.elements.hiddenFrequency.value).toFixed(1);
+                if (freq >= 118 && freq <= 123) {
+                    this.socket.emit('gm_update', {
+                        room: this.room,
+                        changes: { hidden_frequency: freq }
+                    });
+                }
+            },
+
             // Update UI from state
-            updateUI(state) {
+            updateUI: function(state) {
+                if (!state) return;
+                
+                // Update hidden frequency
+                if (state.hidden_frequency) {
+                    this.elements.hiddenFrequency.value = state.hidden_frequency;
+                }
                 // Update instrument displays
                 if (this.elements.pitchIndicator && this.elements.rollIndicator) {
                     this.elements.pitchIndicator.style.transform = `rotate(${-state.heading.y}deg) translateX(-50%) translateY(-10%) scaleX(-1)`;

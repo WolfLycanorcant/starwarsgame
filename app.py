@@ -37,17 +37,26 @@ def handle_join(data):
     if room not in rooms:
         rooms[room] = {
             'state': {
-                'heading': {'x': 0, 'y': 0},
-                'speed': 0,
-                'altitude': 0,
-                'alert': 'NORMAL',
+                'mission_status': 'INITIALIZE',
+                'alert': 'GREEN',
                 'systems': {
                     'weapons': 100,
-                    'shields': 100,
-                    'hull': 100,
                     'power': 100,
+                    'hull': 100,
                     'hull_message': 'All systems nominal'
-                }
+                },
+                'heading': {
+                    'x': 0,
+                    'y': 0
+                },
+                'speed': 0,
+                'altitude': 0,
+                'frequency': '121.5',
+                'transmission_status': 'STANDBY',
+                'reception_status': 'ACTIVE',
+                'signal_strength': 75,
+                'last_transmission': None,
+                'hidden_frequency': None
             },
             'players': {}
         }
@@ -106,6 +115,8 @@ def handle_player_action(data):
         state['altitude'] = value
     elif action == 'set_frequency':
         state['frequency'] = value
+    elif action == 'set_hidden_frequency':
+        state['hidden_frequency'] = value
     elif action == 'set_transmission_status':
         state['transmission_status'] = value
     elif action == 'set_reception_status':

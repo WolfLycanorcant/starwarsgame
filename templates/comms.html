@@ -163,6 +163,9 @@
             <h2>STATUS</h2>
             
             <div class="status-panel">
+                <div id="frequency-found" class="status-indicator" style="display: none; border-color: var(--starwars-red);">
+                    <h3 style="color: var(--starwars-red);">FREQUENCY FOUND</h3>
+                </div>
                 <div class="status-indicator">
                     <h3>TRANSMISSION</h3>
                     <div id="transmission-status">STANDBY</div>
@@ -217,6 +220,26 @@
             frequencyDisplay.textContent = frequency + ' MHz';
             frequencySlider.value = frequency;
             frequencyInput.value = frequency;
+            
+            // Check hidden frequency
+            if (state.hidden_frequency) {
+                const currentFreq = parseFloat(frequency);
+                const hiddenFreq = parseFloat(state.hidden_frequency);
+                
+                // Check if within 0.2 range
+                const lowerBound = hiddenFreq - 0.2;
+                const upperBound = hiddenFreq + 0.2;
+                
+                if (currentFreq >= lowerBound && currentFreq <= upperBound) {
+                    document.getElementById('frequency-found').style.display = 'block';
+                    frequencySlider.style.borderColor = 'var(--starwars-red)';
+                    frequencySlider.style.accentColor = 'var(--starwars-red)';
+                } else {
+                    document.getElementById('frequency-found').style.display = 'none';
+                    frequencySlider.style.borderColor = 'var(--starwars-blue)';
+                    frequencySlider.style.accentColor = 'var(--starwars-blue)';
+                }
+            }
             
             // Update transmission status
             transmissionStatus.textContent = state.transmission_status || 'STANDBY';
