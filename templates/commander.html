@@ -4,103 +4,124 @@
     <title>Commander Station</title>
     <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        :root {
+            --starwars-blue: #007bff;
+            --starwars-red: #dc3545;
+            --starwars-green: #22b14c;
+            --starwars-yellow: #ffd700;
+            --bg-dark: #111;
+            --text-light: #fff;
+        }
+        body {
+            background: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Arial', sans-serif;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .control-panel {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid var(--starwars-green);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .axis-control {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .axis-label {
+            font-size: 1.2em;
+        }
+        .axis-value {
+            font-size: 2em;
+        }
+        select, textarea {
+            background: var(--bg-dark);
+            color: var(--text-light);
+            border: 2px solid var(--starwars-blue);
+            padding: 8px;
+            font-size: 1.1em;
+        }
+        textarea {
+            resize: vertical;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="text-3xl mb-6">COMMAND STATION</h1>
-        
-        <div class="control-panel">
-            <div class="axis-control">
-                <div class="axis-label">MISSION STATUS</div>
-                <div id="mission-status" class="text-4xl">Active</div>
-                <div class="macro-buttons">
-                    <button class="macro-button" onclick="Commander.setMissionStatus('Active')">
-                        [🟢 ACTIVE]
-                    </button>
-                    <button class="macro-button" onclick="Commander.setMissionStatus('Critical')">
-                        [🔴 CRITICAL]
-                    </button>
-                    <button class="macro-button" onclick="Commander.setMissionStatus('Complete')">
-                        [🟢 COMPLETE]
-                    </button>
-                </div>
-            </div>
+<div class="container">
+    <h1 class="text-3xl mb-6">COMMAND STATION</h1>
 
-            <div class="axis-control">
-                <div class="axis-label">ALERT STATUS</div>
-                <div id="alert-status" class="text-4xl">NORMAL</div>
-                <div class="macro-buttons">
-                    <button class="alert-button red" onclick="Commander.setAlert('RED')">
-                        [🔴 RED ALERT]
-                    </button>
-                    <button class="alert-button green" onclick="Commander.setAlert('NORMAL')">
-                        [🟢 NORMAL]
-                    </button>
-                </div>
-            </div>
+    <div class="control-panel">
+        <!-- Mission Status (read-only) -->
+        <div class="axis-control">
+            <div class="axis-label">MISSION STATUS</div>
+            <div id="mission-status" class="axis-value">Active</div>
+        </div>
+
+        <!-- Alert Status -->
+        <div class="axis-control">
+            <div class="axis-label">ALERT STATUS</div>
+            <div id="alert-status" class="axis-value">NORMAL</div>
+            <select id="alert-select" class="bg-black border p-2">
+                <option>NORMAL</option>
+                <option>YELLOW</option>
+                <option>RED</option>
+            </select>
+        </div>
+
+        <!-- Ship AI (read-only) -->
+        <div class="axis-control" style="width: 100%; margin-top: 15px;">
+            <div class="axis-label">SHIP AI</div>
+            <textarea id="ship-ai-display" rows="3" class="bg-black border p-2 w-full" readonly></textarea>
         </div>
     </div>
+</div>
 
-    <script>
-        // Commander Station Controller
-        const Commander = {
-            // State references
-            elements: {
-                missionStatus: document.getElementById('mission-status'),
-                alertStatus: document.getElementById('alert-status')
-            },
+<script>
+const Commander = {
+    elements: {
+        missionStatus: document.getElementById('mission-status'),
+        alertStatus: document.getElementById('alert-status'),
+        alertSelect: document.getElementById('alert-select'),
+        shipAiDisplay: document.getElementById('ship-ai-display')
+    },
+    socket: io(),
+    room: new URLSearchParams(window.location.search).get('room'),
 
-            // Socket connection
-            socket: io(),
-            room: new URLSearchParams(window.location.search).get('room'),
+    init() {
+        if (!this.room) {
+            alert('Please provide a room parameter in the URL');
+            return;
+        }
+        this.socket.emit('join', { room: this.room, station: 'commander' });
+        this.socket.on('connect', () => console.log('Commander connected'));
+        this.socket.on('state_update', state => {
+            this.elements.missionStatus.textContent = state.mission_status || 'Active';
+            this.elements.alertStatus.textContent   = state.alert || 'NORMAL';
+            this.elements.alertSelect.value         = state.alert || 'NORMAL';
+            this.elements.shipAiDisplay.value       = state.ship_ai || '';
+        });
 
-            // Initialize
-            init() {
-                if (!this.room) {
-                    console.error('No room parameter provided');
-                    alert('Please provide a room parameter in the URL');
-                    return;
-                }
-                
-                console.log('Joining room:', this.room);
-                this.socket.emit('join', { 
-                    room: this.room, 
-                    station: 'commander' 
-                });
-                
-                this.socket.on('connect', () => {
-                    console.log('Connected to server');
-                });
-                
-                this.socket.on('state_update', (state) => {
-                    console.log('Received state update:', state);
-                    this.elements.missionStatus.textContent = state.mission_status || 'Active';
-                    this.elements.alertStatus.textContent = state.alert || 'NORMAL';
-                });
-            },
+        // Live dropdown listener
+        this.elements.alertSelect.addEventListener('change', e => {
+            this.socket.emit('player_action', {
+                room: this.room,
+                action: 'set_alert',
+                value: e.target.value
+            });
+        });
+    }
+};
 
-            // Action handlers
-            setMissionStatus(status) {
-                this.elements.missionStatus.textContent = status;
-                this.socket.emit('player_action', {
-                    room: this.room,
-                    action: 'set_mission_status',
-                    value: status
-                });
-            },
-
-            setAlert(level) {
-                this.elements.alertStatus.textContent = level;
-                this.socket.emit('player_action', {
-                    room: this.room,
-                    action: 'set_alert',
-                    value: level
-                });
-            }
-        };
-
-        // Start the controller
-        Commander.init();
-    </script>
+Commander.init();
+</script>
 </body>
 </html>

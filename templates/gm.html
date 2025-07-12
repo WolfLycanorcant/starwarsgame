@@ -57,20 +57,17 @@
             --bg-dark: #111;
             --text-light: #fff;
         }
-        
         body {
             background: var(--bg-dark);
             color: var(--text-light);
             font-family: 'Arial', sans-serif;
         }
-        
         .channel-buttons {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
             margin-top: 10px;
         }
-        
         .channel-btn {
             background: rgba(0, 0, 0, 0.7);
             border: 2px solid var(--starwars-blue);
@@ -83,37 +80,29 @@
             display: flex;
             flex-direction: column;
         }
-        
         .channel-btn:hover {
             border-color: var(--starwars-yellow);
         }
-        
         .channel-number {
             font-size: 1.2em;
             font-weight: bold;
             margin-bottom: 5px;
         }
-        
         .channel-label {
             font-size: 0.9em;
         }
-        
         .channel-btn.emergency {
             border-color: var(--starwars-red);
         }
-        
         .channel-btn.command {
             border-color: var(--starwars-blue);
         }
-        
         .channel-btn.speech {
             border-color: var(--starwars-yellow);
         }
-        
         .channel-btn.medical {
             border-color: var(--starwars-green);
         }
-        
         .artificial-horizon {
             width: 300px;
             height: 200px;
@@ -252,200 +241,211 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="text-3xl mb-6">GAME MASTER CONTROL</h1>
+<div class="container">
+    <h1 class="text-3xl mb-6">GAME MASTER CONTROL</h1>
 
-            <!-- Mission Control Section -->
-            <div class="control-panel">
-                <h2 class="text-2xl mb-4">MISSION CONTROL</h2>
-                <div class="axis-control">
-                    <div class="axis-label">MISSION STATUS</div>
-                    <div id="mission-status" class="axis-value">Active</div>
-                    <div class="macro-buttons">
-                        <button class="macro-button" onclick="GameMaster.setMissionStatus('Active')">
-                            [🟢 ACTIVE]
-                        </button>
-                        <button class="macro-button" onclick="GameMaster.setMissionStatus('Critical')">
-                            [🔴 CRITICAL]
-                        </button>
-                        <button class="macro-button" onclick="GameMaster.setMissionStatus('Complete')">
-                            [🟢 COMPLETE]
-                        </button>
-                    </div>
-                </div>
-                <div class="axis-control">
-                    <div class="axis-label">ALERT STATUS</div>
-                    <select id="alert-status" class="bg-black border p-2">
-                        <option>NORMAL</option>
-                        <option>YELLOW</option>
-                        <option>RED</option>
-                    </select>
-                </div>
-            </div>
+    <!-- Mission Control Section -->
+    <div class="control-panel">
+        <h2 class="text-2xl mb-4">MISSION CONTROL</h2>
 
-            <!-- Gunnery Section -->
-            <div class="control-panel">
-                <h2 class="text-2xl mb-4">GUNNERY</h2>
-                <div class="axis-control">
-                    <div class="axis-label">WEAPONS</div>
-                    <div class="axis-value" id="weapons-value">100%</div>
-                    <input type="number" id="weapons-status" min="0" max="100" class="bg-black border p-2">
-                </div>
-            </div>
-
-            <!-- Engineering Section -->
-            <div class="control-panel">
-                <h2 class="text-2xl mb-4">ENGINEERING</h2>
-                <div class="control-row">
-                    <div class="axis-control" style="width: 100%;">
-                        <div class="axis-label">POWER</div>
-                        <div class="axis-value" id="power-value">100</div>
-                        <input type="range" id="power-status" min="0" max="100" class="speed-control">
-                    </div>
-                </div>
-                <div class="control-row">
-                    <div class="axis-control" style="width: 100%;">
-                        <div class="axis-label">SHIELDS</div>
-                        <div class="axis-value" id="shields-value">100</div>
-                        <input type="range" id="shields-status" min="0" max="100" class="speed-control">
-                    </div>
-                </div>
-                <div class="control-row">
-                    <div class="axis-control" style="width: 100%;">
-                        <div class="axis-label">HULL PERCENTAGE</div>
-                        <div class="axis-value" id="hull-value">100</div>
-                        <input type="range" id="hull-status" min="0" max="100" class="speed-control">
-                    </div>
-                </div>
-                <div class="control-row">
-                    <div class="axis-control" style="width: 100%;">
-                        <div class="axis-label">HULL MESSAGE</div>
-                        <textarea id="hull-message" rows="2" class="bg-black border p-2 w-full"></textarea>
-                    </div>
-                </div>
-            </div>
-
-        <!-- Navigation Section -->
-        <div class="control-panel">
-            <h2 class="text-2xl mb-4">NAVIGATION</h2>
-            <div class="control-row">
-                <div class="axis-control">
-                    <div class="axis-label">HEADING X</div>
-                    <div class="axis-value" id="heading-x">0°</div>
-                    <input type="range" id="heading-x-control" min="-180" max="180" step="1" class="vertical-slider">
-                </div>
-                <div class="axis-control">
-                    <div class="axis-label">HEADING Y</div>
-                    <div class="axis-value" id="heading-y">0°</div>
-                    <input type="range" id="heading-y-control" min="-90" max="90" step="1" class="vertical-slider">
-                </div>
-                <div class="axis-control">
-                    <div class="axis-label">SPEED</div>
-                    <div class="axis-value" id="speed">0</div>
-                    <input type="range" id="speed-control" min="0" max="100" class="speed-control">
-                </div>
+        <div class="axis-control">
+            <div class="axis-label">MISSION STATUS</div>
+            <div id="mission-status" class="axis-value">Active</div>
+            <div class="macro-buttons">
+                <button class="macro-button" onclick="GameMaster.setMissionStatus('Active')">
+                    [🟢 ACTIVE]
+                </button>
+                <button class="macro-button" onclick="GameMaster.setMissionStatus('Critical')">
+                    [🔴 CRITICAL]
+                </button>
+                <button class="macro-button" onclick="GameMaster.setMissionStatus('Complete')">
+                    [🟢 COMPLETE]
+                </button>
             </div>
         </div>
 
-        <!-- Communications Section -->
-        <div class="control-panel">
-            <h2 class="text-2xl mb-4">COMMUNICATIONS</h2>
-            <div class="control-row">
-                <div class="axis-control">
-                    <div class="axis-label">FREQUENCY</div>
-                    <div class="axis-value" id="frequency-value">121.5</div>
-                    <input type="number" id="frequency-status" step="0.1" class="bg-black border p-2">
-                </div>
-                <div class="axis-control">
-                    <div class="axis-label">HIDDEN FREQUENCY</div>
-                    <input type="number" id="hidden-frequency" step="0.1" class="bg-black border p-2 w-full" placeholder="Enter hidden frequency">
-                    <button onclick="GameMaster.setHiddenFrequency()" class="bg-red-600 px-3 py-1 mt-2">SET</button>
-                </div>
-                <div class="axis-control">
-                    <div class="axis-label">CHANNEL BUTTONS</div>
-                    <div class="channel-buttons">
-                        <button class="channel-btn emergency" onclick="GameMaster.updateFrequency('121.5')">
-                            <span class="channel-number">121.5</span>
-                            <span class="channel-label">Emergency</span>
-                        </button>
-                        <button class="channel-btn speech" onclick="GameMaster.updateFrequency('122.0')">
-                            <span class="channel-number">122.0</span>
-                            <span class="channel-label">Speech</span>
-                        </button>
-                        <button class="channel-btn command" onclick="GameMaster.updateFrequency('123.0')">
-                            <span class="channel-number">123.0</span>
-                            <span class="channel-label">Command</span>
-                        </button>
-                        <button class="channel-btn science" onclick="GameMaster.updateFrequency('120.5')">
-                            <span class="channel-number">120.5</span>
-                            <span class="channel-label">Science</span>
-                        </button>
-                        <button class="channel-btn medical" onclick="GameMaster.updateFrequency('119.5')">
-                            <span class="channel-number">119.5</span>
-                            <span class="channel-label">Medical</span>
-                        </button>
-                        <button class="channel-btn navigation" onclick="GameMaster.updateFrequency('118.5')">
-                            <span class="channel-number">118.5</span>
-                            <span class="channel-label">Navigation</span>
-                        </button>
-                    </div>
-                    <div class="axis-control">
-                        <div class="axis-label">HIDDEN FREQUENCY</div>
-                        <input type="number" id="hidden-frequency" step="0.1" class="bg-black border p-2 w-full" placeholder="Enter hidden frequency">
-                        <button onclick="GameMaster.setHiddenFrequency()" class="bg-red-600 px-3 py-1 mt-2">SET</button>
-                    </div>
-                </div>
-                <div class="axis-control">
-                    <div class="axis-label">TRANSMISSION STATUS</div>
-                    <select id="transmission-status" class="bg-black border p-2 w-full">
-                        <option value="STANDBY">STANDBY - Ready to transmit</option>
-                        <option value="TRANSMITTING">TRANSMITTING - Active transmission</option>
-                        <option value="PAUSED">PAUSED - Transmission paused</option>
-                        <option value="BUFFERING">BUFFERING - Data queueing</option>
-                        <option value="ERROR">ERROR - Transmission failure</option>
-                        <option value="SECURED">SECURED - Encrypted transmission</option>
-                        <option value="JAMMED">JAMMED - Jamming detected</option>
-                        <option value="DEGRADED">DEGRADED - Signal quality low</option>
-                        <option value="OVERLOAD">OVERLOAD - Channel congestion</option>
-                        <option value="OFFLINE">OFFLINE - System offline</option>
-                    </select>
-                </div>
-                <div class="axis-control">
-                    <div class="axis-label">RECEPTION STATUS</div>
-                    <select id="reception-status" class="bg-black border p-2 w-full">
-                        <option value="STANDBY">STANDBY - Ready to receive</option>
-                        <option value="RECEIVING">RECEIVING - Active reception</option>
-                        <option value="BUFFERING">BUFFERING - Data queueing</option>
-                        <option value="ERROR">ERROR - Reception failure</option>
-                        <option value="SECURED">SECURED - Encrypted reception</option>
-                        <option value="JAMMED">JAMMED - Jamming detected</option>
-                        <option value="DEGRADED">DEGRADED - Signal quality low</option>
-                        <option value="OVERLOAD">OVERLOAD - Channel congestion</option>
-                        <option value="OFFLINE">OFFLINE - System offline</option>
-                        <option value="RECEIVING_TRANSMISSION">RECEIVING TRANSMISSION</option>
-                    </select>
-                </div>
-            </div>
-                    <div class="axis-label">SIGNAL STRENGTH</div>
-                    <input type="range" id="signal-strength" min="0" max="100" class="speed-control">
-                    <div class="axis-value" id="signal-strength-value">75%</div>
-                </div>
-                <div class="axis-control">
-                    <div class="axis-label">LAST TRANSMISSION</div>
-                    <div class="axis-value" id="last-transmission">0h 0m</div>
-                    <input type="number" id="transmission-hours" min="0" placeholder="Hours" class="bg-black border p-2 w-full">
-                    <input type="number" id="transmission-minutes" min="0" placeholder="Minutes" class="bg-black border p-2 w-full">
-                </div>
-            </div>
+        <div class="axis-control">
+            <div class="axis-label">ALERT STATUS</div>
+            <select id="alert-status" class="bg-black border p-2">
+                <option>NORMAL</option>
+                <option>YELLOW</option>
+                <option>RED</option>
+            </select>
         </div>
 
-        <!-- Update Button -->
-        <button onclick="GameMaster.updateGameState()" class="bg-red-600 px-6 py-3 mt-4">
-            UPDATE ALL STATIONS
-        </button>
+        <!-- Ship AI -->
+        <div class="axis-control" style="width: 100%; margin-top: 15px;">
+            <div class="axis-label">SHIP AI</div>
+            <textarea id="ship-ai-input" rows="3" class="bg-black border p-2 w-full" placeholder="Type AI message to Command…"></textarea>
+            <button onclick="clearShipAI()" class="bg-red-600 px-3 py-1 mt-2" style="align-self:flex-end;">
+                CLEAR
+            </button>
+        </div>
     </div>
 
-    <script>
+    <!-- Gunnery Section -->
+    <div class="control-panel">
+        <h2 class="text-2xl mb-4">GUNNERY</h2>
+        <div class="axis-control">
+            <div class="axis-label">WEAPONS</div>
+            <div class="axis-value" id="weapons-value">100%</div>
+            <input type="number" id="weapons-status" min="0" max="100" class="bg-black border p-2">
+        </div>
+    </div>
+
+    <!-- Engineering Section -->
+    <div class="control-panel">
+        <h2 class="text-2xl mb-4">ENGINEERING</h2>
+        <div class="control-row">
+            <div class="axis-control" style="width: 100%;">
+                <div class="axis-label">POWER</div>
+                <div class="axis-value" id="power-value">100</div>
+                <input type="range" id="power-status" min="0" max="100" class="speed-control">
+            </div>
+        </div>
+        <div class="control-row">
+            <div class="axis-control" style="width: 100%;">
+                <div class="axis-label">SHIELDS</div>
+                <div class="axis-value" id="shields-value">100</div>
+                <input type="range" id="shields-status" min="0" max="100" class="speed-control">
+            </div>
+        </div>
+        <div class="control-row">
+            <div class="axis-control" style="width: 100%;">
+                <div class="axis-label">HULL PERCENTAGE</div>
+                <div class="axis-value" id="hull-value">100</div>
+                <input type="range" id="hull-status" min="0" max="100" class="speed-control">
+            </div>
+        </div>
+        <div class="control-row">
+            <div class="axis-control" style="width: 100%;">
+                <div class="axis-label">HULL MESSAGE</div>
+                <textarea id="hull-message" rows="2" class="bg-black border p-2 w-full"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Section -->
+    <div class="control-panel">
+        <h2 class="text-2xl mb-4">NAVIGATION</h2>
+        <div class="control-row">
+            <div class="axis-control">
+                <div class="axis-label">HEADING X</div>
+                <div class="axis-value" id="heading-x">0°</div>
+                <input type="range" id="heading-x-control" min="-180" max="180" step="1" class="speed-control">
+            </div>
+            <div class="axis-control">
+                <div class="axis-label">HEADING Y</div>
+                <div class="axis-value" id="heading-y">0°</div>
+                <input type="range" id="heading-y-control" min="-90" max="90" step="1" class="vertical-slider">
+            </div>
+            <div class="axis-control">
+                <div class="axis-label">SPEED</div>
+                <div class="axis-value" id="speed">0</div>
+                <input type="range" id="speed-control" min="0" max="100" class="speed-control">
+            </div>
+            <div class="axis-control">
+                <div class="axis-label">ALTITUDE (km)</div>
+                <div class="axis-value" id="altitude-value">0</div>
+                <input type="range" id="altitude-control" min="0" max="1000" step="1" class="speed-control">
+            </div>
+        </div>
+    </div>
+
+    <!-- Communications Section -->
+    <div class="control-panel">
+        <h2 class="text-2xl mb-4">COMMUNICATIONS</h2>
+        <div class="control-row">
+            <div class="axis-control">
+                <div class="axis-label">FREQUENCY</div>
+                <div class="axis-value" id="frequency-value">121.5</div>
+                <input type="number" id="frequency-status" step="0.1" class="bg-black border p-2">
+            </div>
+            <div class="axis-control">
+                <div class="axis-label">HIDDEN FREQUENCY</div>
+                <input type="number" id="hidden-frequency" step="0.1" class="bg-black border p-2 w-full" placeholder="Enter hidden frequency">
+                <button onclick="GameMaster.setHiddenFrequency()" class="bg-red-600 px-3 py-1 mt-2">SET</button>
+            </div>
+            <div class="axis-control">
+                <div class="axis-label">CHANNEL BUTTONS</div>
+                <div class="channel-buttons">
+                    <button class="channel-btn emergency" onclick="GameMaster.updateFrequency('121.5')">
+                        <span class="channel-number">121.5</span>
+                        <span class="channel-label">Emergency</span>
+                    </button>
+                    <button class="channel-btn speech" onclick="GameMaster.updateFrequency('122.0')">
+                        <span class="channel-number">122.0</span>
+                        <span class="channel-label">Speech</span>
+                    </button>
+                    <button class="channel-btn command" onclick="GameMaster.updateFrequency('123.0')">
+                        <span class="channel-number">123.0</span>
+                        <span class="channel-label">Command</span>
+                    </button>
+                    <button class="channel-btn science" onclick="GameMaster.updateFrequency('120.5')">
+                        <span class="channel-number">120.5</span>
+                        <span class="channel-label">Science</span>
+                    </button>
+                    <button class="channel-btn medical" onclick="GameMaster.updateFrequency('119.5')">
+                        <span class="channel-number">119.5</span>
+                        <span class="channel-label">Medical</span>
+                    </button>
+                    <button class="channel-btn navigation" onclick="GameMaster.updateFrequency('118.5')">
+                        <span class="channel-number">118.5</span>
+                        <span class="channel-label">Navigation</span>
+                    </button>
+                </div>
+            </div>
+            <div class="axis-control">
+                <div class="axis-label">TRANSMISSION STATUS</div>
+                <select id="transmission-status" class="bg-black border p-2 w-full">
+                    <option value="STANDBY">STANDBY - Ready to transmit</option>
+                    <option value="TRANSMITTING">TRANSMITTING - Active transmission</option>
+                    <option value="PAUSED">PAUSED - Transmission paused</option>
+                    <option value="BUFFERING">BUFFERING - Data queueing</option>
+                    <option value="ERROR">ERROR - Transmission failure</option>
+                    <option value="SECURED">SECURED - Encrypted transmission</option>
+                    <option value="JAMMED">JAMMED - Jamming detected</option>
+                    <option value="DEGRADED">DEGRADED - Signal quality low</option>
+                    <option value="OVERLOAD">OVERLOAD - Channel congestion</option>
+                    <option value="OFFLINE">OFFLINE - System offline</option>
+                </select>
+            </div>
+            <div class="axis-control">
+                <div class="axis-label">RECEPTION STATUS</div>
+                <select id="reception-status" class="bg-black border p-2 w-full">
+                    <option value="STANDBY">STANDBY - Ready to receive</option>
+                    <option value="RECEIVING">RECEIVING - Active reception</option>
+                    <option value="BUFFERING">BUFFERING - Data queueing</option>
+                    <option value="ERROR">ERROR - Reception failure</option>
+                    <option value="SECURED">SECURED - Encrypted reception</option>
+                    <option value="JAMMED">JAMMED - Jamming detected</option>
+                    <option value="DEGRADED">DEGRADED - Signal quality low</option>
+                    <option value="OVERLOAD">OVERLOAD - Channel congestion</option>
+                    <option value="OFFLINE">OFFLINE - System offline</option>
+                    <option value="RECEIVING_TRANSMISSION">RECEIVING TRANSMISSION</option>
+                </select>
+            </div>
+        </div>
+        <div class="axis-control">
+            <div class="axis-label">SIGNAL STRENGTH</div>
+            <input type="range" id="signal-strength" min="0" max="100" class="speed-control">
+            <div class="axis-value" id="signal-strength-value">75%</div>
+        </div>
+        <div class="axis-control">
+            <div class="axis-label">LAST TRANSMISSION</div>
+            <div class="axis-value" id="last-transmission">0h 0m</div>
+            <input type="number" id="transmission-hours" min="0" placeholder="Hours" class="bg-black border p-2 w-full">
+            <input type="number" id="transmission-minutes" min="0" placeholder="Minutes" class="bg-black border p-2 w-full">
+        </div>
+    </div>
+
+    <!-- Update Button -->
+    <button onclick="GameMaster.updateGameState()" class="bg-red-600 px-6 py-3 mt-4">
+        UPDATE ALL STATIONS
+    </button>
+</div>
+
+<script>
         // Game Master Controller
         const GameMaster = {
             // State references
@@ -454,6 +454,7 @@
                 headingX: document.getElementById('heading-x'),
                 headingY: document.getElementById('heading-y'),
                 speed: document.getElementById('speed'),
+                altitudeValue: document.getElementById('altitude-value'),
                 alertStatus: document.getElementById('alert-status'),
                 weaponsStatus: document.getElementById('weapons-status'),
                 weaponsValue: document.getElementById('weapons-value'),
@@ -539,6 +540,16 @@
                     });
                 });
 
+                // Altitude control
+                document.getElementById('altitude-control').addEventListener('input', (e) => {
+                    const value = parseInt(e.target.value);
+                    this.elements.altitudeValue.textContent = value;
+                    this.socket.emit('gm_update', {
+                        room: this.room,
+                        changes: { altitude: value }
+                    });
+                });
+
                 // System controls
                 document.getElementById('weapons-status').addEventListener('input', (e) => {
                     const value = parseInt(e.target.value);
@@ -589,6 +600,14 @@
                     this.socket.emit('gm_update', {
                         room: this.room,
                         changes: { alert: value }
+                    });
+                });
+
+                // Ship AI
+                document.getElementById('ship-ai-input').addEventListener('input', (e) => {
+                    this.socket.emit('gm_update', {
+                        room: this.room,
+                        changes: { ship_ai: e.target.value }
                     });
                 });
 
@@ -703,6 +722,9 @@
                 this.elements.headingX.textContent = state.heading.x + '°';
                 this.elements.headingY.textContent = state.heading.y + '°';
                 this.elements.speed.textContent = state.speed;
+                this.elements.altitudeValue.textContent = state.altitude || 0;
+                document.getElementById('altitude-control').value = state.altitude || 0;
+
                 this.elements.alertStatus.value = state.alert;
                 this.elements.weaponsStatus.value = state.systems.weapons;
                 this.elements.weaponsValue.textContent = state.systems.weapons + '%';
@@ -726,6 +748,9 @@
                     const hours = Math.floor(state.last_transmission / 60);
                     this.elements.lastTransmission.textContent = `${hours}h ${minutes}m`;
                 }
+
+                // Update Ship AI
+                document.getElementById('ship-ai-input').value = state.ship_ai || '';
             },
 
             // Mission status handler
@@ -740,6 +765,15 @@
 
         // Start the controller
         GameMaster.init();
-    </script>
+
+        // Clear button helper
+        function clearShipAI() {
+            document.getElementById('ship-ai-input').value = '';
+            GameMaster.socket.emit('gm_update', {
+                room: GameMaster.room,
+                changes: { ship_ai: '' }
+            });
+        }
+</script>
 </body>
 </html>

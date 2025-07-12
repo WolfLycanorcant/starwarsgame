@@ -111,6 +111,8 @@ def handle_player_action(data):
         state['heading']['y'] = value
     elif action == 'set_speed':
         state['speed'] = value
+        emit('state_update', state, room=room)
+        emit('gm_notification', {'type': 'speed_update', 'speed': value}, room=room)
     elif action == 'set_altitude':
         state['altitude'] = value
     elif action == 'set_frequency':
