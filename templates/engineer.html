@@ -48,7 +48,7 @@
             margin: 10px 0;
         }
         .warning {
-            color: var(--starwars-red);
+            color: var(--starwars-yellow);
         }
         .critical {
             color: var(--starwars-red);
@@ -239,20 +239,30 @@ function updateShieldsStatus(percentage) {
 }
 
 function updateAlertStatus(alert) {
-    const val = document.getElementById('alert-value');
-    const msg = document.getElementById('alert-status');
-    if (!val || !msg) return;
-    val.textContent = alert.toUpperCase();
-    msg.textContent = alert;
-    val.className = 'status-value';
-    msg.className = 'status-message';
+    const alertVal = document.getElementById('alert-value');
+    const alertMsg = document.getElementById('alert-status');
+    if (!alert) return;
+
+    alertVal.textContent = alert.toUpperCase();
+    alertMsg.textContent = alert;
+
+    alertVal.className = 'status-value';
+    alertMsg.className = 'status-message';
+    alertVal.style.animation = '';
+    alertMsg.style.animation = '';
+
     const lower = alert.toLowerCase();
-    if (lower === 'critical') {
-        val.className += ' critical';
-        msg.className += ' critical';
-    } else if (lower === 'warning' || lower === 'yellow') {
-        val.className += ' warning';
-        msg.className += ' warning';
+    if (lower === 'red') {
+        alertVal.style.color = '#dc3545';
+        alertMsg.style.color = '#dc3545';
+        alertVal.style.animation = 'blink 1s infinite';
+        alertMsg.style.animation = 'blink 1s infinite';
+    } else if (lower === 'yellow') {
+        alertVal.style.color = '#ffd700';
+        alertMsg.style.color = '#ffd700';
+    } else {
+        alertVal.style.color = '';
+        alertMsg.style.color = '';
     }
 }
 

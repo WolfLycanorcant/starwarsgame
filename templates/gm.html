@@ -281,6 +281,12 @@
                 CLEAR
             </button>
         </div>
+
+        <!-- AI Command Input (read-only mirror of commander station) -->
+        <div class="axis-control" style="width: 100%; margin-top: 15px;">
+            <div class="axis-label">AI COMMAND INPUT</div>
+            <textarea id="command-override-display" rows="2" class="bg-black border p-2 w-full" readonly></textarea>
+        </div>
     </div>
 
     <!-- Gunnery Section -->
@@ -475,6 +481,7 @@
                 transmissionHours: document.getElementById('transmission-hours'),
                 transmissionMinutes: document.getElementById('transmission-minutes'),
                 hiddenFrequency: document.getElementById('hidden-frequency'),
+                commandOverrideDisplay: document.getElementById('command-override-display'),
                 // Instrument elements
                 pitchIndicator: document.querySelector('.artificial-horizon .pitch-indicator'),
                 rollIndicator: document.querySelector('.artificial-horizon .roll-indicator'),
@@ -751,6 +758,10 @@
 
                 // Update Ship AI
                 document.getElementById('ship-ai-input').value = state.ship_ai || '';
+                // Update AI Command Input mirror
+                if (this.elements.commandOverrideDisplay) {
+                    this.elements.commandOverrideDisplay.value = state.command_override || '';
+                }
             },
 
             // Mission status handler

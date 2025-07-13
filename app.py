@@ -127,6 +127,8 @@ def handle_player_action(data):
         state['signal_strength'] = value
     elif action == 'set_last_transmission':
         state['last_transmission'] = value
+    elif action == 'set_command_override_live':
+        state['command_override'] = value
     
     emit('state_update', state, room=room)
     

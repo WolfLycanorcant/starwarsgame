@@ -82,6 +82,13 @@
             <div class="axis-label">SHIP AI</div>
             <textarea id="ship-ai-display" rows="3" class="bg-black border p-2 w-full" readonly></textarea>
         </div>
+
+        <!-- Command Override (user-editable) -->
+        <div class="axis-control" style="width: 100%; margin-top: 15px;">
+            <div class="axis-label">AI COMMAND INPUT</div>
+            <textarea id="command-override" rows="2" class="bg-black border p-2 w-full"
+                      placeholder="Type override text here…"></textarea>
+        </div>
     </div>
 </div>
 
@@ -91,7 +98,8 @@ const Commander = {
         missionStatus: document.getElementById('mission-status'),
         alertStatus: document.getElementById('alert-status'),
         alertSelect: document.getElementById('alert-select'),
-        shipAiDisplay: document.getElementById('ship-ai-display')
+        shipAiDisplay: document.getElementById('ship-ai-display'),
+        commandOverride: document.getElementById('command-override')
     },
     socket: io(),
     room: new URLSearchParams(window.location.search).get('room'),
@@ -108,6 +116,7 @@ const Commander = {
             this.elements.alertStatus.textContent   = state.alert || 'NORMAL';
             this.elements.alertSelect.value         = state.alert || 'NORMAL';
             this.elements.shipAiDisplay.value       = state.ship_ai || '';
+            this.elements.commandOverride.value     = state.command_override || '';
         });
 
         // Live dropdown listener
@@ -116,6 +125,15 @@ const Commander = {
                 room: this.room,
                 action: 'set_alert',
                 value: e.target.value
+            });
+        });
+
+        // Real-time command override
+        this.elements.commandOverride.addEventListener('input', () => {
+            this.socket.emit('player_action', {
+                room: this.room,
+                action: 'set_command_override_live',
+                value: this.elements.commandOverride.value
             });
         });
     }
