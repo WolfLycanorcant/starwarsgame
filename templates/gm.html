@@ -296,6 +296,19 @@
             <div class="axis-label">WEAPONS</div>
             <div class="axis-value" id="weapons-value">100%</div>
             <input type="number" id="weapons-status" min="0" max="100" class="bg-black border p-2">
+            
+            <!-- live probe count -->
+            <div class="axis-label" style="margin-top:6px;">
+                PROBES REMAINING: <span id="gmProbesLeft">3</span>
+            </div>
+        </div>
+        
+        <!-- Probe-Count Control -->
+        <div class="axis-control">
+            <div class="axis-label">PROBE COUNT</div>
+            <input type="range" id="probe-count-gm" min="0" max="3" value="3"
+                   class="speed-control">
+            <div class="axis-value" id="probe-count-display">3</div>
         </div>
     </div>
 
@@ -519,6 +532,16 @@
 
             // Set up all control event listeners
             setupEventListeners() {
+                // Probe count control
+                document.getElementById('probe-count-gm').addEventListener('input', (e) => {
+                    const val = parseInt(e.target.value);
+                    document.getElementById('probe-count-display').textContent = val;
+                    this.socket.emit('gm_update', {
+                        room: this.room,
+                        changes: { probesLeft: val }
+                    });
+                });
+
                 // Navigation controls
                 document.getElementById('heading-x-control').addEventListener('input', (e) => {
                     const value = parseInt(e.target.value);
@@ -740,6 +763,13 @@
                 this.elements.hullStatus.value = state.systems.hull;
                 this.elements.hullValue.textContent = state.systems.hull + '%';
                 this.elements.hullMessage.value = state.systems.hull_message || 'All systems nominal';
+                
+                // Sync probe count display and slider
+                if (state.probesLeft !== undefined) {
+                    document.getElementById('gmProbesLeft').textContent = state.probesLeft;
+                    document.getElementById('probe-count-gm').value = state.probesLeft;
+                    document.getElementById('probe-count-display').textContent = state.probesLeft;
+                }
                 
                 // Update communications
                 this.elements.frequencyValue.textContent = state.frequency || '121.5';
