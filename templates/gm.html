@@ -343,6 +343,16 @@
                 <textarea id="hull-message" rows="2" class="bg-black border p-2 w-full"></textarea>
             </div>
         </div>
+        <div class="control-row">
+            <div class="axis-control" style="width: 100%;">
+                <div class="axis-label">MAX AVAILABLE POWER</div>
+                <div class="axis-value" id="max-power-value">100%</div>
+                <input type="range" id="max-power-control" min="0" max="100" value="100" class="speed-control">
+                <div style="font-size: 0.9em; color: var(--starwars-yellow); margin-top: 5px;">
+                    Controls total power pool available to Engineering
+                </div>
+            </div>
+        </div>
 
     </div>
 
@@ -624,6 +634,16 @@
                     this.socket.emit('gm_update', {
                         room: this.room,
                         changes: { systems: { hull_message: value } }
+                    });
+                });
+
+                // Max Available Power control
+                document.getElementById('max-power-control').addEventListener('input', (e) => {
+                    const value = parseInt(e.target.value);
+                    document.getElementById('max-power-value').textContent = value + '%';
+                    this.socket.emit('gm_update', {
+                        room: this.room,
+                        changes: { systems: { max_available_power: value } }
                     });
                 });
 

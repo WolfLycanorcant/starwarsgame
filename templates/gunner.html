@@ -31,41 +31,209 @@
             background-color:#ff0000 !important;
         }
 
-        /* ---- NEW SHOOTING SIMULATOR ---- */
+        /* ---- 3D SHOOTING SIMULATOR ---- */
         #simulator{
             border:2px solid var(--starwars-blue);
             border-radius:10px;
-            background:#000;
+            background:linear-gradient(180deg, #000428 0%, #004e92 100%);
             width:100%;
-            height:300px;
+            height:400px;
             position:relative;
             overflow:hidden;
-            cursor:none;
+            cursor:crosshair;
+            perspective:1000px;
+            transform-style:preserve-3d;
         }
+
+        /* 3D Space Grid */
+        .space-grid {
+            position:absolute;
+            width:100%;
+            height:100%;
+            background-image:
+                linear-gradient(rgba(0,123,255,0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,123,255,0.1) 1px, transparent 1px);
+            background-size:50px 50px;
+            animation:gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform:translateZ(0px); }
+            100% { transform:translateZ(-500px); }
+        }
+
+        /* 3D Turret */
         .turret{
             position:absolute;
-            bottom:10px;
+            bottom:20px;
+            left:50%;
+            transform:translateX(-50%) rotateX(15deg);
+            width:30px;
+            height:60px;
+            background:linear-gradient(45deg, var(--starwars-blue), #0056b3);
+            border-radius:8px;
+            box-shadow:0 0 20px rgba(0,123,255,0.5);
+            z-index:100;
+        }
+
+        .turret::before {
+            content:'';
+            position:absolute;
+            top:-10px;
             left:50%;
             transform:translateX(-50%);
-            width:20px;
-            height:40px;
-            background:var(--starwars-blue);
+            width:8px;
+            height:20px;
+            background:#fff;
             border-radius:4px;
+            box-shadow:0 0 10px #fff;
         }
+
+        /* 3D Laser Beams */
         .laser{
             position:absolute;
-            width:4px;
-            height:20px;
-            background:#0f0;
-            border-radius:2px;
+            width:6px;
+            height:30px;
+            background:linear-gradient(0deg, #0f0, #fff, #0f0);
+            border-radius:3px;
+            box-shadow:0 0 15px #0f0, 0 0 30px #0f0;
+            animation:laserGlow 0.1s ease-in-out;
+            z-index:50;
         }
+
+        @keyframes laserGlow {
+            0% { box-shadow:0 0 15px #0f0, 0 0 30px #0f0; }
+            50% { box-shadow:0 0 25px #0f0, 0 0 50px #0f0; }
+            100% { box-shadow:0 0 15px #0f0, 0 0 30px #0f0; }
+        }
+
+        /* 3D Drone with depth movement */
         .drone{
             position:absolute;
-            top:10px;
-            width:50px;
+            width:60px;
+            height:30px;
+            background:linear-gradient(45deg, var(--starwars-red), #ff6b6b);
+            border-radius:8px;
+            box-shadow:0 0 20px rgba(220,53,69,0.6);
+            transform-style:preserve-3d;
+            transition:transform 0.1s ease;
+        }
+
+        .drone::before {
+            content:'';
+            position:absolute;
+            top:50%;
+            left:50%;
+            transform:translate(-50%, -50%);
+            width:20px;
             height:20px;
-            background:var(--starwars-red);
-            border-radius:4px;
+            background:radial-gradient(circle, #fff, transparent);
+            border-radius:50%;
+            animation:droneLight 2s ease-in-out infinite;
+        }
+
+        @keyframes droneLight {
+            0%, 100% { opacity:0.3; }
+            50% { opacity:1; }
+        }
+
+        /* Depth layers for 3D effect */
+        .drone.near { 
+            transform:translateZ(100px) scale(1.2); 
+            z-index:80;
+        }
+        .drone.mid { 
+            transform:translateZ(0px) scale(1.0); 
+            z-index:60;
+        }
+        .drone.far { 
+            transform:translateZ(-100px) scale(0.8); 
+            z-index:40;
+            opacity:0.7;
+        }
+
+        /* Hit effect */
+        .drone.hit {
+            animation:hitFlash 0.3s ease-out;
+        }
+
+        @keyframes hitFlash {
+            0% { background:#fff; transform:scale(1.3); }
+            100% { background:linear-gradient(45deg, var(--starwars-red), #ff6b6b); transform:scale(1); }
+        }
+
+        /* 3D Crosshair */
+        .crosshair {
+            position:absolute;
+            width:30px;
+            height:30px;
+            border:2px solid #0f0;
+            border-radius:50%;
+            pointer-events:none;
+            z-index:200;
+            box-shadow:0 0 10px #0f0;
+        }
+
+        .crosshair::before,
+        .crosshair::after {
+            content:'';
+            position:absolute;
+            background:#0f0;
+            box-shadow:0 0 5px #0f0;
+        }
+
+        .crosshair::before {
+            width:2px;
+            height:20px;
+            top:50%;
+            left:50%;
+            transform:translate(-50%, -50%);
+        }
+
+        .crosshair::after {
+            width:20px;
+            height:2px;
+            top:50%;
+            left:50%;
+            transform:translate(-50%, -50%);
+        }
+
+        /* Stars background */
+        .stars {
+            position:absolute;
+            width:100%;
+            height:100%;
+            background-image:
+                radial-gradient(2px 2px at 20px 30px, #fff, transparent),
+                radial-gradient(2px 2px at 40px 70px, #fff, transparent),
+                radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+                radial-gradient(1px 1px at 130px 80px, #fff, transparent),
+                radial-gradient(2px 2px at 160px 30px, #fff, transparent);
+            background-repeat:repeat;
+            background-size:200px 100px;
+            animation:starMove 50s linear infinite;
+            opacity:0.6;
+        }
+
+        @keyframes starMove {
+            0% { transform:translateY(0px); }
+            100% { transform:translateY(-100px); }
+        }
+
+        /* Success flash animation for green WEAPONS ACCURATE message */
+        @keyframes successFlash {
+            0% { 
+                background:rgba(34,177,76,.9);
+                box-shadow:0 0 30px #22b14c;
+            }
+            50% { 
+                background:rgba(34,177,76,1);
+                box-shadow:0 0 50px #22b14c, 0 0 100px #22b14c;
+            }
+            100% { 
+                background:rgba(34,177,76,.9);
+                box-shadow:0 0 30px #22b14c;
+            }
         }
     </style>
 </head>
@@ -99,8 +267,11 @@
 
             <!-- the actual game arena -->
             <div id="simulator" style="display:none;">
+                <div class="stars"></div>
+                <div class="space-grid"></div>
+                <div class="crosshair" id="crosshair"></div>
                 <div class="turret" id="turret"></div>
-                <div class="drone" id="drone"></div>
+                <div class="drone mid" id="drone"></div>
             </div>
             <p id="scoreArea" style="margin-top:10px; display:none;">
                 Score: <span id="score">0</span> | Shots: <span id="shotsLeft">25</span>/25
@@ -210,8 +381,10 @@ function endSimulation() {
         banner.style.cssText = `
             position:absolute; inset:0;
             display:flex; align-items:center; justify-content:center;
-            font-size:48px; color:#fff; background:rgba(40,167,69,.85);
-            animation:blink 1s infinite; z-index:999;
+            font-size:48px; color:#fff; font-weight:bold;
+            background:rgba(34,177,76,.9);
+            animation:successFlash 1s infinite; z-index:999;
+            text-shadow:0 0 20px #22b14c;
         `;
     } else {
         banner.textContent = 'WEAPONS INACCURATE';
@@ -222,7 +395,7 @@ function endSimulation() {
             animation:blink 1s infinite; z-index:999;
         `;
     }
-    // banner already appended above
+    sim.appendChild(banner);
     if (points >= TARGET_SCORE) {
         // nothing else on success
     } else {
@@ -251,23 +424,33 @@ function endSimulation() {
     }
 }
 
-/* ---------- mini-game logic ---------- */
+/* ---------- 3D mini-game logic ---------- */
 const sim   = document.getElementById('simulator');
 const turret= document.getElementById('turret');
 const drone = document.getElementById('drone');
+const crosshair = document.getElementById('crosshair');
 const score = document.getElementById('score');
 let points  = 0;
-let droneX  = 0, droneDir = 2;
+let droneX  = 0, droneY = 50, droneZ = 0;
+let droneDir = 2, droneDepthDir = 1;
 let shotsLeft = 25;          // Tracks the number of shots remaining
 
-/* mouse aiming */
+/* 3D mouse aiming with crosshair */
 function moveOnMouse(e){
     const rect = sim.getBoundingClientRect();
-    turret.style.left = (e.clientX - rect.left)+'px';
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    
+    // Update turret position
+    turret.style.left = mouseX + 'px';
+    
+    // Update crosshair position
+    crosshair.style.left = (mouseX - 15) + 'px';
+    crosshair.style.top = (mouseY - 15) + 'px';
 }
 sim.addEventListener('mousemove', moveOnMouse);
 
-/* shooting */
+/* 3D shooting with depth awareness */
 function fireOnClick(e){
     // guard
     if (shotsLeft <= 0) return;
@@ -277,26 +460,44 @@ function fireOnClick(e){
 
     const rect = sim.getBoundingClientRect();
     const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
 
     const laser = document.createElement('div');
     laser.className = 'laser';
-    laser.style.left = (x - 2) + 'px';
-    laser.style.bottom = '50px';
+    laser.style.left = (x - 3) + 'px';
+    laser.style.bottom = '80px';
     sim.appendChild(laser);
 
     const move = () => {
         const b = parseFloat(laser.style.bottom);
-        if (b > 300) { laser.remove(); return; }
-        laser.style.bottom = (b + 12) + 'px';
+        if (b > 400) { laser.remove(); return; }
+        laser.style.bottom = (b + 15) + 'px';
 
-        const l = parseFloat(laser.style.left);
-        const d = parseFloat(drone.style.left);
-        if (b > 270 && b < 290 && l > d - 2 && l < d + 52) {
-            points += 10;
+        // 3D hit detection considering drone depth
+        const laserX = parseFloat(laser.style.left);
+        const laserY = 400 - parseFloat(laser.style.bottom);
+        const droneRect = drone.getBoundingClientRect();
+        const simRect = sim.getBoundingClientRect();
+        
+        const droneX = parseFloat(drone.style.left) || 0;
+        const droneY = parseFloat(drone.style.top) || 50;
+        
+        // Check collision with depth consideration
+        if (laserY >= droneY - 15 && laserY <= droneY + 45 && 
+            laserX >= droneX - 10 && laserX <= droneX + 70) {
+            
+            // Score based on drone depth (harder to hit = more points)
+            let hitPoints = 10;
+            if (drone.classList.contains('far')) hitPoints = 20;
+            else if (drone.classList.contains('near')) hitPoints = 5;
+            
+            points += hitPoints;
             document.getElementById('score').textContent = points;
             laser.remove();
-            drone.style.background = '#fff';
-            setTimeout(() => drone.style.background = '', 100);
+            
+            // Enhanced hit effect
+            drone.classList.add('hit');
+            setTimeout(() => drone.classList.remove('hit'), 300);
             return;
         }
         requestAnimationFrame(move);
@@ -305,11 +506,40 @@ function fireOnClick(e){
 }
 sim.addEventListener('click', fireOnClick);
 
-/* drone motion loop */
+/* 3D drone motion loop */
 (function moveDrone(){
+    // Horizontal movement
     droneX += droneDir;
-    if(droneX <= 0 || droneX >= sim.clientWidth-50) droneDir *= -1;
-    drone.style.left = droneX+'px';
+    if(droneX <= 0 || droneX >= sim.clientWidth-60) droneDir *= -1;
+    
+    // Vertical movement
+    droneY += Math.sin(Date.now() * 0.002) * 0.5;
+    droneY = Math.max(20, Math.min(200, droneY));
+    
+    // Depth movement with class changes
+    droneZ += droneDepthDir;
+    if(droneZ <= -100) {
+        droneDepthDir = 1;
+        drone.className = 'drone far';
+    } else if(droneZ >= 100) {
+        droneDepthDir = -1;
+        drone.className = 'drone near';
+    } else if(droneZ >= -20 && droneZ <= 20) {
+        drone.className = 'drone mid';
+    }
+    
+    // Apply 3D transformations
+    drone.style.left = droneX + 'px';
+    drone.style.top = droneY + 'px';
+    
+    // Add slight rotation based on movement
+    const rotation = droneDir > 0 ? 5 : -5;
+    const currentTransform = drone.className.includes('near') ? 'translateZ(100px) scale(1.2)' :
+                           drone.className.includes('far') ? 'translateZ(-100px) scale(0.8)' :
+                           'translateZ(0px) scale(1.0)';
+    
+    drone.style.transform = currentTransform + ` rotateY(${rotation}deg)`;
+    
     requestAnimationFrame(moveDrone);
 })();
 
