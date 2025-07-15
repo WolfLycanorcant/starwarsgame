@@ -274,6 +274,44 @@
             }
         });
 
+        // Audio initialization
+        let audioEnabled = false;
+
+        // Enable audio on first user interaction
+        function enableAudio() {
+            if (!audioEnabled) {
+                const testAudio = new Audio('/Sounds/tank.mp3');
+                testAudio.volume = 0;
+                testAudio.play().then(() => {
+                    audioEnabled = true;
+                    console.log('Engineer: Audio enabled');
+                    // Hide audio prompt if it exists
+                    const prompt = document.getElementById('audio-prompt');
+                    if (prompt) prompt.style.display = 'none';
+                }).catch(e => {
+                    console.log('Engineer: Audio still blocked:', e);
+                });
+            }
+        }
+
+        // Add click listener to enable audio
+        document.addEventListener('click', enableAudio, { once: true });
+
+        // Listen for weapon fire sounds from gunner station
+        socket.on('player_action', (data) => {
+            console.log('Engineer: Received player_action:', data);
+            if (data.action === 'weapon_sound') {
+                console.log('Engineer: Playing weapon sound');
+                if (audioEnabled) {
+                    const weaponSound = new Audio('/Sounds/tank.mp3');
+                    weaponSound.volume = 0.5;
+                    weaponSound.play().catch(e => console.log('Engineer: Audio play failed:', e));
+                } else {
+                    console.log('Engineer: Audio not enabled yet - click anywhere on the page first');
+                }
+            }
+        });
+
         /* ----------------  Power Allocation System  ---------------- */
         let maxAvailablePower = 100; // GM can control this
         let weaponsPower = 33;

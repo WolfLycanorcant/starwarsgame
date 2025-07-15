@@ -253,7 +253,7 @@
     <!-- === NEW MINI-GAME === -->
     <div class="status-grid">
         <div class="status-card">
-            <h2>SHOOTING SIMULATOR</h2>
+            <h2>ZERO IN WEAPONS</h2>
 
             <!-- placeholder before game -->
             <div id="sim-prelude">
@@ -274,7 +274,7 @@
                 <div class="drone mid" id="drone"></div>
             </div>
             <p id="scoreArea" style="margin-top:10px; display:none;">
-                Score: <span id="score">0</span> | Shots: <span id="shotsLeft">25</span>/25
+                Progress to Sync: <span id="score">0</span> | Shots: <span id="shotsLeft">25</span>/25 | Probes Remaining: <span id="probesLeftSim">3</span>
             </p>
         </div>
     </div>
@@ -314,12 +314,18 @@ socket.emit('join', { room, station: 'gunner' });
 /* ===== PROBES COUNTER ===== */
 let probesLeft = parseInt(localStorage.getItem('probesLeft') || 3, 10);
 document.getElementById('probesLeft').textContent = probesLeft;
+// Also initialize the simulator display
+const simProbes = document.getElementById('probesLeftSim');
+if (simProbes) simProbes.textContent = probesLeft;
 
 socket.on('state_update', (state) => {
     if (state.probesLeft !== undefined) {
         probesLeft = state.probesLeft;
         localStorage.setItem('probesLeft', probesLeft);
         document.getElementById('probesLeft').textContent = probesLeft;
+        // Also update the simulator display
+        const simProbes = document.getElementById('probesLeftSim');
+        if (simProbes) simProbes.textContent = probesLeft;
     }
     document.getElementById('weapon-status').textContent = (state.systems?.weapons || 100) + '%';
     updateAlertStatus(state.alert);
@@ -351,7 +357,17 @@ function fireWeapons() {
     const btn = document.querySelector('button.bg-red-600');
     btn.classList.add('firing');
     setTimeout(() => btn.classList.remove('firing'), 150);
+    
+    // Play weapon sound effect locally
+    const weaponSound = new Audio('/Sounds/tank.mp3');
+    weaponSound.volume = 0.7;
+    weaponSound.play().catch(e => console.log('Audio play failed:', e));
+    
+    // Broadcast weapon fire to all stations
+    console.log('Gunner: Firing weapons, emitting events to room:', room);
     socket.emit('player_action', { room, action: 'fire_weapons' });
+    socket.emit('player_action', { room, action: 'weapon_sound' });
+    console.log('Gunner: Emitted weapon_sound event');
 }
 
 /* ===== NEW TIMER & RESULT HELPERS ===== */
@@ -373,6 +389,12 @@ function endSimulation() {
     probesLeft = Math.max(0, probesLeft - 1);
     localStorage.setItem('probesLeft', probesLeft);
     document.getElementById('probesLeft').textContent = probesLeft;
+    // Also update the simulator display
+    const simProbes = document.getElementById('probesLeftSim');
+    if (simProbes) simProbes.textContent = probesLeft;
+    
+    // Notify server/GM of probe consumption
+    socket.emit('player_action', { room, action: 'consume_probe', value: probesLeft });
 
     // success or failure banner
     const banner = document.createElement('div');
@@ -457,6 +479,15 @@ function fireOnClick(e){
 
     shotsLeft--;
     document.getElementById('shotsLeft').textContent = shotsLeft;
+
+    // Play weapon sound effect
+    const weaponSound = new Audio('/Sounds/tank.mp3');
+    weaponSound.volume = 0.7;
+    weaponSound.play().catch(e => console.log('Audio play failed:', e));
+
+    // Broadcast weapon sound to other stations
+    console.log('Gunner 3D Simulator: Emitting weapon_sound to room:', room);
+    socket.emit('player_action', { room, action: 'weapon_sound' });
 
     const rect = sim.getBoundingClientRect();
     const x = e.clientX - rect.left;

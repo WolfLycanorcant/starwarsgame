@@ -184,6 +184,41 @@ socket.on('state_update', (state) => {
     updateAlertStatus(state.alert);
 });
 
+// Audio initialization
+let audioEnabled = false;
+
+// Enable audio on first user interaction
+function enableAudio() {
+    if (!audioEnabled) {
+        const testAudio = new Audio('/Sounds/tank.mp3');
+        testAudio.volume = 0;
+        testAudio.play().then(() => {
+            audioEnabled = true;
+            console.log('Comms: Audio enabled');
+        }).catch(e => {
+            console.log('Comms: Audio still blocked:', e);
+        });
+    }
+}
+
+// Add click listener to enable audio
+document.addEventListener('click', enableAudio, { once: true });
+
+// Listen for weapon fire sounds from gunner station
+socket.on('player_action', (data) => {
+    console.log('Comms: Received player_action:', data);
+    if (data.action === 'weapon_sound') {
+        console.log('Comms: Playing weapon sound');
+        if (audioEnabled) {
+            const weaponSound = new Audio('/Sounds/tank.mp3');
+            weaponSound.volume = 0.5;
+            weaponSound.play().catch(e => console.log('Comms: Audio play failed:', e));
+        } else {
+            console.log('Comms: Audio not enabled yet - click anywhere on the page first');
+        }
+    }
+});
+
 /* Existing comms functions */
 function updateFrequency() {
     const button = event.currentTarget;

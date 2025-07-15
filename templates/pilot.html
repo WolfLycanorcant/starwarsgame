@@ -424,6 +424,41 @@ socket.on('state_update', (state) => {
     updateAlertStatus(state.alert);
 });
 
+// Audio initialization
+let audioEnabled = false;
+
+// Enable audio on first user interaction
+function enableAudio() {
+    if (!audioEnabled) {
+        const testAudio = new Audio('/Sounds/tank.mp3');
+        testAudio.volume = 0;
+        testAudio.play().then(() => {
+            audioEnabled = true;
+            console.log('Pilot: Audio enabled');
+        }).catch(e => {
+            console.log('Pilot: Audio still blocked:', e);
+        });
+    }
+}
+
+// Add click listener to enable audio
+document.addEventListener('click', enableAudio, { once: true });
+
+// Listen for weapon fire sounds from gunner station
+socket.on('player_action', (data) => {
+    console.log('Pilot: Received player_action:', data);
+    if (data.action === 'weapon_sound') {
+        console.log('Pilot: Playing weapon sound');
+        if (audioEnabled) {
+            const weaponSound = new Audio('/Sounds/tank.mp3');
+            weaponSound.volume = 0.5;
+            weaponSound.play().catch(e => console.log('Pilot: Audio play failed:', e));
+        } else {
+            console.log('Pilot: Audio not enabled yet - click anywhere on the page first');
+        }
+    }
+});
+
 /* Existing pilot functions */
 function setSpeed(increment) {
     currentValues.speed = Math.max(0, Math.min(100, currentValues.speed + increment));

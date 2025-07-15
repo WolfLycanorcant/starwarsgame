@@ -1,6 +1,7 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_from_directory
 from flask_socketio import SocketIO, emit, join_room, leave_room
 from flask_cors import CORS
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -24,6 +25,10 @@ def landing():
 @app.route('/station/<station>')
 def station(station):
     return render_template(f'{station}.html')
+
+@app.route('/Sounds/<filename>')
+def serve_sound(filename):
+    return send_from_directory('Sounds', filename)
 
 @socketio.on('connect')
 def handle_connect():
@@ -130,6 +135,17 @@ def handle_player_action(data):
         state['last_transmission'] = value
     elif action == 'set_command_override_live':
         state['command_override'] = value
+    elif action == 'weapon_sound':
+        # Broadcast weapon sound to all stations in the room
+        emit('player_action', {'action': 'weapon_sound'}, room=room)
+        print(f"Broadcasting weapon sound to room {room}")
+        return  # Don't emit state_update for weapon sounds
+    elif action == 'consume_probe':
+        # Update probe count when consumed by gunner station
+        state['probesLeft'] = value
+        print(f"Probe consumed in {room}, remaining: {value}")
+        emit('state_update', state, room=room)
+        return
     
     emit('state_update', state, room=room)
     

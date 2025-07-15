@@ -119,6 +119,41 @@ const Commander = {
             this.elements.commandOverride.value     = state.command_override || '';
         });
 
+        // Audio initialization
+        this.audioEnabled = false;
+        
+        // Enable audio on first user interaction
+        this.enableAudio = () => {
+            if (!this.audioEnabled) {
+                const testAudio = new Audio('/Sounds/tank.mp3');
+                testAudio.volume = 0;
+                testAudio.play().then(() => {
+                    this.audioEnabled = true;
+                    console.log('Commander: Audio enabled');
+                }).catch(e => {
+                    console.log('Commander: Audio still blocked:', e);
+                });
+            }
+        };
+
+        // Add click listener to enable audio
+        document.addEventListener('click', this.enableAudio, { once: true });
+
+        // Listen for weapon fire sounds from gunner station
+        this.socket.on('player_action', (data) => {
+            console.log('Commander: Received player_action:', data);
+            if (data.action === 'weapon_sound') {
+                console.log('Commander: Playing weapon sound');
+                if (this.audioEnabled) {
+                    const weaponSound = new Audio('/Sounds/tank.mp3');
+                    weaponSound.volume = 0.5;
+                    weaponSound.play().catch(e => console.log('Commander: Audio play failed:', e));
+                } else {
+                    console.log('Commander: Audio not enabled yet - click anywhere on the page first');
+                }
+            }
+        });
+
         // Live dropdown listener
         this.elements.alertSelect.addEventListener('change', e => {
             this.socket.emit('player_action', {
