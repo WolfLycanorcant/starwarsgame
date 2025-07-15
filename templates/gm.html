@@ -302,6 +302,11 @@
             <div class="axis-label" style="margin-top:6px;">
                 PROBES REMAINING: <span id="gmProbesLeft">3</span>
             </div>
+            
+            <!-- Weapon Calibration Status -->
+            <div class="axis-label" style="margin-top:10px;">
+                WEAPON CALIBRATION: <span id="weapon-calibration-status" style="font-weight:bold;">STANDBY</span>
+            </div>
         </div>
         
         <!-- Probe-Count Control -->
@@ -539,6 +544,24 @@
                 this.socket.on('state_update', (state) => {
                     console.log('Received state:', state);
                     this.updateUI(state);
+                });
+
+                // Listen for weapon calibration notifications
+                this.socket.on('weapon_calibration', (data) => {
+                    const statusElement = document.getElementById('weapon-calibration-status');
+                    if (statusElement) {
+                        if (data.status === 'accurate') {
+                            statusElement.textContent = 'ACCURATE';
+                            statusElement.style.color = 'var(--starwars-green)';
+                        } else if (data.status === 'inaccurate') {
+                            statusElement.textContent = 'INACCURATE';
+                            statusElement.style.color = 'var(--starwars-red)';
+                        } else {
+                            statusElement.textContent = 'STANDBY';
+                            statusElement.style.color = 'var(--text-light)';
+                        }
+                        console.log('GM: Weapon calibration status updated to:', data.status);
+                    }
                 });
             },
 

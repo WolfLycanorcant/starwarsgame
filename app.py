@@ -158,6 +158,16 @@ def handle_player_action(data):
     
     print(f"Player action in {room}: {action} = {value}")
 
+@socketio.on('weapon_calibration')
+def handle_weapon_calibration(data):
+    room = data.get('room')
+    status = data.get('status')
+    
+    if room in rooms:
+        print(f"Weapon calibration in {room}: {status}")
+        # Broadcast calibration status to GM station only
+        emit('weapon_calibration', {'status': status}, room=f"{room}_gm")
+
 @socketio.on('disconnect')
 def handle_disconnect():
     print('Client disconnected:', request.sid)

@@ -290,7 +290,7 @@
                 </h3>
                 <div id="weapon-status" class="text-4xl">100%</div>
             </div>
-            <div>
+            <div style="display: none;">
                 <h3>Target Locked:</h3>
                 <div id="target-status" class="text-4xl">No</div>
             </div>
@@ -408,6 +408,9 @@ function endSimulation() {
             animation:successFlash 1s infinite; z-index:999;
             text-shadow:0 0 20px #22b14c;
         `;
+        // Notify GM of accurate calibration
+        socket.emit('weapon_calibration', { room, status: 'accurate' });
+        console.log('Gunner: Emitting weapon_calibration to room:', room, 'status: accurate');
     } else {
         banner.textContent = 'WEAPONS INACCURATE';
         banner.style.cssText = `
@@ -416,6 +419,9 @@ function endSimulation() {
             font-size:48px; color:#fff; background:rgba(220,53,69,.85);
             animation:blink 1s infinite; z-index:999;
         `;
+        // Notify GM of inaccurate calibration
+        socket.emit('weapon_calibration', { room, status: 'inaccurate' });
+        console.log('Gunner: Emitting weapon_calibration to room:', room, 'status: inaccurate');
     }
     sim.appendChild(banner);
     if (points >= TARGET_SCORE) {
