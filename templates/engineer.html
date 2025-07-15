@@ -151,8 +151,6 @@
             <input type="range" id="shields-slider" min="0" max="100" value="100" class="slider">
             <div class="slider-value" id="shields-slider-value">100%</div>
         </div>
-
-        <button class="button" onclick="updateSystems()">Apply Changes</button>
     </div>
 </div>
 
@@ -203,81 +201,50 @@ function updateHullStatus(percentage, message) {
 }
 
 function updatePowerStatus(percentage) {
-    const val  = document.getElementById('power-value');
-    const stat = document.getElementById('power-status');
-    val.textContent = `${percentage}%`;
-    powerSlider.value = percentage;
-    powerValue.textContent = `${percentage}%`;
-    if (percentage <= 25) {
-        stat.textContent = 'CRITICAL - Power failure imminent!';
-        stat.className = 'status-message critical';
-    } else if (percentage <= 50) {
-        stat.textContent = 'WARNING - Power levels critical';
-        stat.className = 'status-message warning';
-    } else {
-        stat.textContent = 'Optimal';
-        stat.className = 'status-message';
-    }
+    const powerVal = document.getElementById('power-value');
+    const powerMsg = document.getElementById('power-status');
+    if (!powerVal || !powerMsg) return;
+    powerVal.textContent = `${percentage}%`;
+    powerMsg.textContent = percentage <= 25 ? 'Critical' :
+                       percentage <= 50 ? 'Low' :
+                       percentage <= 75 ? 'Normal' :
+                       'Optimal';
+    powerVal.className = powerMsg.className = percentage <= 25 ? 'status-value critical' :
+                                            percentage <= 50 ? 'status-value warning' :
+                                            'status-value';
 }
 
 function updateShieldsStatus(percentage) {
-    const val  = document.getElementById('shields-value');
-    const stat = document.getElementById('shields-status');
-    val.textContent = `${percentage}%`;
-    shieldsSlider.value = percentage;
-    shieldsValue.textContent = `${percentage}%`;
-    if (percentage <= 25) {
-        stat.textContent = 'CRITICAL - Shields failing';
-        stat.className = 'status-message critical';
-    } else if (percentage <= 50) {
-        stat.textContent = 'WARNING - Shields at reduced capacity';
-        stat.className = 'status-message warning';
-    } else {
-        stat.textContent = 'Active';
-        stat.className = 'status-message';
-    }
+    const shieldsVal = document.getElementById('shields-value');
+    const shieldsMsg = document.getElementById('shields-status');
+    if (!shieldsVal || !shieldsMsg) return;
+    shieldsVal.textContent = `${percentage}%`;
+    shieldsMsg.textContent = percentage <= 25 ? 'Critical' :
+                       percentage <= 50 ? 'Low' :
+                       percentage <= 75 ? 'Normal' :
+                       'Active';
+    shieldsVal.className = shieldsMsg.className = percentage <= 25 ? 'status-value critical' :
+                                            percentage <= 50 ? 'status-value warning' :
+                                            'status-value';
 }
 
 function updateAlertStatus(alert) {
     const alertVal = document.getElementById('alert-value');
     const alertMsg = document.getElementById('alert-status');
-    if (!alert) return;
-
+    if (!alertVal || !alertMsg) return;
+    
     alertVal.textContent = alert.toUpperCase();
-    alertMsg.textContent = alert;
+    alertMsg.textContent = {
+        'green': 'All clear',
+        'yellow': 'Caution advised',
+        'red': 'Emergency protocols active'
+    }[alert.toLowerCase()] || 'Unknown status';
+    
+    alertVal.className = alertMsg.className = 
+        alert.toLowerCase() === 'green' ? 'status-value' :
+        alert.toLowerCase() === 'yellow' ? 'status-value warning' :
+        'status-value critical';
 
-    alertVal.className = 'status-value';
-    alertMsg.className = 'status-message';
-    alertVal.style.animation = '';
-    alertMsg.style.animation = '';
-
-    const lower = alert.toLowerCase();
-    if (lower === 'red') {
-        alertVal.style.color = '#dc3545';
-        alertMsg.style.color = '#dc3545';
-        alertVal.style.animation = 'blink 1s infinite';
-        alertMsg.style.animation = 'blink 1s infinite';
-    } else if (lower === 'yellow') {
-        alertVal.style.color = '#ffd700';
-        alertMsg.style.color = '#ffd700';
-    } else {
-        alertVal.style.color = '';
-        alertMsg.style.color = '';
-    }
-}
-
-/* Apply button still works for shields / other batch updates */
-function updateSystems() {
-    const shieldsVal = document.getElementById('shields-slider').value;
-    socket.emit('player_action', { room, action: 'set_shields', value: parseInt(shieldsVal) });
-}
-
-/* shields live update kept for completeness */
-const shieldsSlider = document.getElementById('shields-slider');
-const shieldsValue  = document.getElementById('shields-slider-value');
-shieldsSlider.addEventListener('input', (e) => {
-    shieldsValue.textContent = e.target.value + '%';
-});
 </script>
 </body>
 </html>

@@ -28,11 +28,15 @@
         .status-indicator{padding:10px;border:2px solid var(--starwars-green);border-radius:5px;text-align:center;flex:1;min-width:120px;}
         .signal-meter{height:20px;background:#333;border-radius:10px;margin:20px 0;position:relative;}
         .signal-level{height:100%;background:var(--starwars-green);border-radius:10px;width:75%;transition:width .3s;}
-        .button{background:var(--starwars-blue);color:#fff;border:none;padding:10px 20px;border-radius:5px;cursor:pointer;margin:10px 0;width:100%;}
+        .button{background:var(--starwars-blue);color:#fff;border:none;padding:10px 20px;border-radius:5px;cursor:pointer;margin:10px 0;width:100%;transition: all 0.3s ease;}
         .button:hover{background:var(--starwars-yellow);color:#000;}
+        .button:active{background:var(--starwars-red);color:#fff;}
+        .button.clicked{background:var(--starwars-red);color:#fff;}
         .preset-frequencies{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:20px 0;}
-        .preset-button{background:var(--starwars-yellow);color:#000;border:2px solid var(--starwars-blue);padding:10px;text-align:center;cursor:pointer;border-radius:5px;}
+        .preset-button{background:var(--starwars-yellow);color:#000;border:2px solid var(--starwars-blue);padding:10px;text-align:center;cursor:pointer;border-radius:5px;transition: all 0.3s ease;}
         .preset-button:hover{background:var(--starwars-blue);color:#fff;}
+        .preset-button:active{background:var(--starwars-red);color:#fff;border-color:var(--starwars-red);}
+        .preset-button.clicked{background:var(--starwars-red);color:#fff;border-color:var(--starwars-red);}
         @keyframes blink{0%{opacity:1}50%{opacity:.5}100%{opacity:1}}
     </style>
 </head>
@@ -182,6 +186,16 @@ socket.on('state_update', (state) => {
 
 /* Existing comms functions */
 function updateFrequency() {
+    const button = event.currentTarget;
+    
+    // Add clicked class to button
+    button.classList.add('clicked');
+    
+    // Remove clicked class after a short delay
+    setTimeout(() => {
+        button.classList.remove('clicked');
+    }, 200);
+    
     const freq = parseFloat(frequencyInput.value || frequencySlider.value).toFixed(1);
     if (freq < 118 || freq > 123) {
         alert('Frequency must be between 118.0 and 123.0 MHz');
